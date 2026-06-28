@@ -1,0 +1,246 @@
+﻿@model BookVerse.Models.ViewModels.ShoppingCartVM
+
+@{
+    ViewData["Title"] = "Order Summary";
+}
+
+<style>
+    :root {
+        --ink:     #1a1a2e;
+        --muted:   #64748b;
+        --border:  #e2e8f0;
+        --accent:  #6366f1;
+        --accent2: #8b5cf6;
+        --surface: #f8fafc;
+        --white:   #ffffff;
+        --radius:  12px;
+        --shadow:  0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    body { background: var(--surface); color: var(--ink); }
+
+    .summary-page { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    .page-title { font-size: 1.75rem; font-weight: 700; letter-spacing: -.5px; margin-bottom: .25rem; }
+    .page-sub   { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+
+    /* ── Steps breadcrumb ── */
+    .steps {
+        display: flex; align-items: center; gap: .5rem;
+        margin-bottom: 2rem; font-size: .85rem;
+    }
+    .step { color: var(--muted); }
+    .step.active { color: var(--accent); font-weight: 600; }
+    .step-sep { color: var(--border); }
+
+    /* ── Layout ── */
+    .summary-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start; }
+    @@media (max-width: 820px) { .summary-layout { grid-template-columns: 1fr; } }
+
+    /* ── Card ── */
+    .card {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+    .card-title {
+        font-size: .85rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .06em;
+        color: var(--muted);
+        margin-bottom: 1.25rem;
+        padding-bottom: .75rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Form ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-grid .full { grid-column: 1 / -1; }
+    @@media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .field { display: flex; flex-direction: column; gap: .35rem; }
+    .field label { font-size: .82rem; font-weight: 600; color: var(--muted); }
+    .field input {
+        padding: .6rem .85rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: .9rem;
+        color: var(--ink);
+        background: var(--white);
+        transition: border-color .15s;
+        outline: none;
+    }
+    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,.1); }
+    .field input.input-error { border-color: #ef4444; }
+    .text-danger { font-size: .78rem; color: #ef4444; margin-top: .15rem; }
+
+    /* ── Order Items (right panel) ── */
+    .order-item {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: .75rem;
+        padding: .6rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: .875rem;
+    }
+    .order-item:last-of-type { border-bottom: none; }
+    .order-item-name { flex: 1; }
+    .order-item-title { font-weight: 600; }
+    .order-item-meta  { font-size: .78rem; color: var(--muted); }
+    .order-item-price { font-weight: 600; white-space: nowrap; }
+
+    .order-total-row {
+        display: flex; justify-content: space-between;
+        font-size: 1.1rem; font-weight: 700;
+        padding-top: .75rem;
+        border-top: 2px solid var(--border);
+        margin-top: .5rem;
+    }
+
+    /* ── Place Order button ── */
+    .place-order-btn {
+        display: block; width: 100%;
+        padding: .9rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: var(--white);
+        text-align: center;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: .95rem;
+        border: none; cursor: pointer;
+        margin-top: 1.25rem;
+        transition: opacity .15s, transform .1s;
+    }
+    .place-order-btn:hover { opacity: .9; transform: translateY(-1px); }
+
+    .back-link {
+        display: block; text-align: center;
+        font-size: .82rem; color: var(--muted);
+        margin-top: .75rem; text-decoration: none;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* company notice */
+    .notice {
+        display: flex; align-items: flex-start; gap: .75rem;
+        padding: .85rem 1rem;
+        background: #eff6ff;
+        border-radius: 8px;
+        border: 1px solid #bfdbfe;
+        font-size: .85rem;
+        color: #1d4ed8;
+        margin-bottom: 1rem;
+    }
+    .notice-icon { font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+</style>
+
+<div class="summary-page">
+    <h1 class="page-title">Checkout</h1>
+    <p class="page-sub">Review your order and confirm shipping details</p>
+
+    <div class="steps">
+        <span class="step">Cart</span>
+        <span class="step-sep">›</span>
+        <span class="step active">Shipping &amp; Review</span>
+        <span class="step-sep">›</span>
+        <span class="step">Confirmation</span>
+    </div>
+
+    <form asp-action="Summary" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="summary-layout">
+            <!-- Left: Shipping Form -->
+            <div>
+                @if (User.IsInRole(BookVerse.Utilities.SD.Role_Company))
+                {
+                    <div class="notice">
+                        <span class="notice-icon">ℹ️</span>
+                        <span>As a company account, you'll be invoiced. Payment is due within 30 days of shipping.</span>
+                    </div>
+                }
+
+                <div class="card">
+                    <div class="card-title">Shipping Details</div>
+
+                    <input asp-for="OrderHeader.ApplicationUserId" type="hidden" />
+
+                    <div class="form-grid">
+                        <div class="field full">
+                            <label asp-for="OrderHeader.Name">Full Name</label>
+                            <input asp-for="OrderHeader.Name" placeholder="Jane Smith" />
+                            <span asp-validation-for="OrderHeader.Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="field full">
+                            <label asp-for="OrderHeader.PhoneNumber">Phone Number</label>
+                            <input asp-for="OrderHeader.PhoneNumber" placeholder="+1 (555) 000-0000" />
+                            <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="field full">
+                            <label asp-for="OrderHeader.StreetAddress">Street Address</label>
+                            <input asp-for="OrderHeader.StreetAddress" placeholder="123 Main St" />
+                            <span asp-validation-for="OrderHeader.StreetAddress" class="text-danger"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="OrderHeader.City">City</label>
+                            <input asp-for="OrderHeader.City" placeholder="New York" />
+                            <span asp-validation-for="OrderHeader.City" class="text-danger"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="OrderHeader.State">State</label>
+                            <input asp-for="OrderHeader.State" placeholder="NY" />
+                            <span asp-validation-for="OrderHeader.State" class="text-danger"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="OrderHeader.PostalCode">Postal Code</label>
+                            <input asp-for="OrderHeader.PostalCode" placeholder="10001" />
+                            <span asp-validation-for="OrderHeader.PostalCode" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Order Review -->
+            <div>
+                <div class="card">
+                    <div class="card-title">Your Order</div>
+
+                    @foreach (var item in Model.ShoppingCartList)
+                    {
+                        <div class="order-item">
+                            <div class="order-item-name">
+                                <div class="order-item-title">@item.Product.Title</div>
+                                <div class="order-item-meta">Qty: @item.Count × $@item.Price.ToString("F2")</div>
+                            </div>
+                            <div class="order-item-price">
+                                $@((item.Price * item.Count).ToString("F2"))
+                            </div>
+                        </div>
+                    }
+
+                    <div class="order-total-row">
+                        <span>Total</span>
+                        <span>$@Model.OrderHeader.OrderTotal.ToString("F2")</span>
+                    </div>
+
+                    <button type="submit" class="place-order-btn">
+                        @(User.IsInRole(BookVerse.Utilities.SD.Role_Company)
+                            ? "Place Order (Invoice Me)"
+                            : "Place Order →")
+                    </button>
+
+                    <a asp-action="Index" class="back-link">← Back to cart</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

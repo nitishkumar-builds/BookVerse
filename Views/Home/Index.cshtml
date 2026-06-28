@@ -1,0 +1,1623 @@
+﻿@model IEnumerable<BookVerse.Models.ViewModels.ProductVM>
+@using BookVerse.Utilities
+
+@{
+    ViewData["Title"] = "Discover Your Next Book";
+
+    bool isAdminOrEmployee = User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee);
+
+    var products = Model?.ToList() ?? new List<BookVerse.Models.ViewModels.ProductVM>();
+
+    var featuredProducts = products.Take(8).ToList();
+    var heroBook = products.FirstOrDefault();
+    var sideBooks = products.Skip(1).Take(3).ToList();
+    var bestsellerProducts = products.Skip(2).Take(4).ToList();
+    var reviewProducts = products.Take(3).ToList();
+}
+
+<div class="bv-home-page">
+
+    <section class="bv-hero-section">
+        <div class="container">
+
+            <div class="row align-items-center g-5">
+
+                <div class="col-lg-7">
+                    <p class="bv-eyebrow">Welcome to BookVerse</p>
+
+                    <h1 class="bv-hero-title">
+                        Every Great Story
+                        <span>Begins Here</span>
+                    </h1>
+
+                    <p class="bv-hero-text">
+                        Explore thousands of books across genres. Find your next adventure,
+                        build your cart, and enjoy tiered pricing made for real readers.
+                    </p>
+
+                    <div class="bv-hero-actions">
+                        <a asp-controller="Products" asp-action="Index" class="btn bv-primary-btn">
+                            Browse Books
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+
+                        @if (isAdminOrEmployee)
+                        {
+                            <a asp-controller="Categories" asp-action="Index" class="btn bv-secondary-btn">
+                                Explore Categories
+                            </a>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="bv-hero-showcase">
+
+                        <div class="bv-showcase-cover">
+                            @if (heroBook != null && !string.IsNullOrWhiteSpace(heroBook.ImageUrl))
+                            {
+                                <img src="@Url.Content(heroBook.ImageUrl)" alt="@heroBook.Title" />
+                            }
+                            else
+                            {
+                                <div class="bv-cover-placeholder">
+                                    <i class="bi bi-book"></i>
+                                    <span>No Cover</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="bv-showcase-list">
+                            @if (sideBooks.Any())
+                            {
+                                @foreach (var book in sideBooks)
+                                {
+                                    <div class="bv-showcase-item">
+                                        @book.Title
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="bv-showcase-item">The Last Mission</div>
+                                <div class="bv-showcase-item alt">Rise of the Empires</div>
+                                <div class="bv-showcase-item blue">The Great Divide</div>
+                            }
+                        </div>
+
+                        <div class="bv-discount-badge">
+                            <span>Up to</span>
+                            <strong>20%</strong>
+                            <span>Off</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="bv-feature-strip">
+            <div class="bv-feature-item">
+                <div class="bv-feature-icon">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div>
+                    <h3>Free Shipping</h3>
+                    <p>On orders over ₹999</p>
+                </div>
+            </div>
+
+            <div class="bv-feature-item">
+                <div class="bv-feature-icon">
+                    <i class="bi bi-tags"></i>
+                </div>
+                <div>
+                    <h3>Best Prices</h3>
+                    <p>Tiered pricing for savings</p>
+                </div>
+            </div>
+
+            <div class="bv-feature-item">
+                <div class="bv-feature-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <div>
+                    <h3>Secure Payment</h3>
+                    <p>100% safe checkout</p>
+                </div>
+            </div>
+
+            <div class="bv-feature-item">
+                <div class="bv-feature-icon">
+                    <i class="bi bi-headset"></i>
+                </div>
+                <div>
+                    <h3>24/7 Support</h3>
+                    <p>We are here to help</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="container bv-section-space" id="about">
+        <div class="bv-about-band">
+            <div class="bv-about-copy">
+                <p class="bv-eyebrow">About BookVerse</p>
+                <h2>A cleaner way to discover your next read.</h2>
+                <p>
+                    BookVerse brings handpicked titles, simple rupee pricing, and reader-friendly browsing into one calm bookstore experience.
+                    Explore books by mood, check clear discounts, and move from discovery to cart without confusion.
+                </p>
+                <a asp-controller="Products" asp-action="Index" class="bv-about-link">
+                    Explore the collection
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="bv-about-stats" aria-label="BookVerse highlights">
+                <div>
+                    <strong>8+</strong>
+                    <span>Curated picks</span>
+                </div>
+                <div>
+                    <strong>₹400-₹800</strong>
+                    <span>Reader-friendly pricing</span>
+                </div>
+                <div>
+                    <strong>24/7</strong>
+                    <span>Helpful support</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container bv-section-space">
+
+        <div class="bv-section-header">
+            <div>
+                <p class="bv-eyebrow">Featured Books</p>
+                <h2>Handpicked For You</h2>
+                <p>Fresh picks from our catalog with beautiful covers and smart pricing.</p>
+            </div>
+
+            <a asp-controller="Products" asp-action="Index" class="bv-link-btn">
+                View All Books
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        @if (featuredProducts.Any())
+        {
+            <div class="bv-book-grid">
+
+                @foreach (var product in featuredProducts)
+                {
+                    string coverPath = !string.IsNullOrWhiteSpace(product.ImageUrl)
+                        ? Url.Content(product.ImageUrl)
+                        : "";
+
+                    <div class="bv-book-card">
+
+                        <div class="bv-book-cover-wrap">
+                            @if (!string.IsNullOrWhiteSpace(coverPath))
+                            {
+                                <img src="@coverPath" alt="@product.Title" class="bv-book-cover" />
+                            }
+                            else
+                            {
+                                <div class="bv-book-cover-placeholder">
+                                    <i class="bi bi-book"></i>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(product.CategoryName))
+                            {
+                                <span class="bv-category-badge">@product.CategoryName</span>
+                            }
+                        </div>
+
+                        <div class="bv-book-info">
+                            <h3>@product.Title</h3>
+                            <p class="bv-author">@product.Author</p>
+
+                            <div class="bv-book-meta">
+                                <span>
+                                    <i class="bi bi-building"></i>
+                                    @product.CompanyName
+                                </span>
+                            </div>
+
+                            <div class="bv-price-line">
+                                <span class="bv-list-price">₹@product.ListPrice.ToString("0.00")</span>
+                                <span class="bv-main-price">₹@product.Price.ToString("0.00")</span>
+                            </div>
+
+                            <a asp-controller="Products"
+                                   asp-action="Details"
+                                   asp-route-id="@product.Id"
+                                   class="btn bv-card-btn">
+                                View Details
+                            </a>
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="bv-empty-box">
+                <i class="bi bi-book"></i>
+                <h3>No books available yet</h3>
+                <p>Books will appear here once products are added.</p>
+
+                @if (isAdminOrEmployee)
+                {
+                    <a asp-controller="Products" asp-action="Create" class="btn bv-primary-btn">
+                        Add First Book
+                    </a>
+                }
+            </div>
+        }
+
+    </section>
+
+    <section class="container bv-section-space bv-monthly-section">
+        <div class="bv-section-header">
+            <div>
+                <p class="bv-eyebrow">Monthly Highlights</p>
+                <h2>Books Worth Your Shelf Space</h2>
+                <p>A quick look at the titles readers are exploring this month.</p>
+            </div>
+        </div>
+
+        <div class="bv-highlight-grid">
+            <div class="bv-highlight-card large">
+                <i class="bi bi-stars"></i>
+                <h3>Editor&apos;s Pick</h3>
+                <p>
+                    Carefully selected titles with strong stories, useful knowledge, and beautiful covers.
+                </p>
+            </div>
+
+            <div class="bv-highlight-card">
+                <i class="bi bi-lightning-charge"></i>
+                <h3>Fast Moving</h3>
+                <p>Popular reads that customers are adding to cart more often.</p>
+            </div>
+
+            <div class="bv-highlight-card">
+                <i class="bi bi-gem"></i>
+                <h3>Premium Covers</h3>
+                <p>Books with strong visual appeal for your personal library.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="bv-offer-section">
+        <div class="container">
+            <div class="bv-offer-card">
+                <div>
+                    <p class="bv-eyebrow">Special Offer</p>
+                    <h2>Build Your Library With Better Deals</h2>
+                    <p>
+                        Buy in bulk and unlock better prices with our tiered pricing system.
+                        Perfect for schools, teams, companies, and passionate readers.
+                    </p>
+                </div>
+
+                <a asp-controller="Products" asp-action="Index" class="btn bv-primary-btn">
+                    Shop Now
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="container bv-section-space">
+        <div class="bv-section-header">
+            <div>
+                <p class="bv-eyebrow">Bestseller Board</p>
+                <h2>Reader Favorites</h2>
+                <p>Compact ranking cards for books that deserve attention.</p>
+            </div>
+        </div>
+
+        <div class="bv-bestseller-list">
+            @if (bestsellerProducts.Any())
+            {
+                int rank = 1;
+
+                @foreach (var product in bestsellerProducts)
+                {
+                    <a asp-controller="Products"
+                           asp-action="Details"
+                           asp-route-id="@product.Id"
+                           class="bv-bestseller-row">
+                        <span class="bv-rank">@rank</span>
+                        <div>
+                            <strong>@product.Title</strong>
+                            <small>@product.Author</small>
+                        </div>
+                        <span class="bv-row-price">₹@product.Price.ToString("0.00")</span>
+                    </a>
+
+                    rank++;
+                }
+            }
+            else
+            {
+                <div class="bv-bestseller-row">
+                    <span class="bv-rank">1</span>
+                    <div>
+                        <strong>The Last Mission</strong>
+                        <small>Jack Carrow</small>
+                    </div>
+                    <span class="bv-row-price">₹699.00</span>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="container bv-section-space">
+        <div class="bv-rewards-card">
+            <div>
+                <p class="bv-eyebrow">Reader Rewards</p>
+                <h2>More Books, More Value</h2>
+                <p>
+                    BookVerse rewards bulk purchases with better pricing tiers.
+                    The more readers buy, the more value they unlock.
+                </p>
+            </div>
+
+            <div class="bv-reward-stats">
+                <div>
+                    <strong>50+</strong>
+                    <span>Better pricing</span>
+                </div>
+
+                <div>
+                    <strong>100+</strong>
+                    <span>Maximum discount</span>
+                </div>
+
+                <div>
+                    <strong>₹</strong>
+                    <span>Rupee pricing</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container bv-section-space">
+        <div class="bv-section-header">
+            <div>
+                <p class="bv-eyebrow">Shop By Mood</p>
+                <h2>Find The Right Read</h2>
+                <p>Let readers explore books by feeling, genre, or purpose.</p>
+            </div>
+        </div>
+
+        <div class="bv-mood-grid">
+            <a asp-controller="Products" asp-action="Index" class="bv-mood-card">
+                <i class="bi bi-compass"></i>
+                <strong>Adventure</strong>
+                <span>For bold stories</span>
+            </a>
+
+            <a asp-controller="Products" asp-action="Index" class="bv-mood-card">
+                <i class="bi bi-brain"></i>
+                <strong>Learning</strong>
+                <span>For skill growth</span>
+            </a>
+
+            <a asp-controller="Products" asp-action="Index" class="bv-mood-card">
+                <i class="bi bi-heart"></i>
+                <strong>Emotional</strong>
+                <span>For deep reads</span>
+            </a>
+
+            <a asp-controller="Products" asp-action="Index" class="bv-mood-card">
+                <i class="bi bi-fire"></i>
+                <strong>Trending</strong>
+                <span>For popular picks</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="container bv-section-space">
+        <div class="bv-section-header">
+            <div>
+                <p class="bv-eyebrow">Reader Reviews</p>
+                <h2>What Readers Say</h2>
+                <p>Honest notes from readers using BookVerse for casual reading, gifts, and study lists.</p>
+            </div>
+        </div>
+
+        <div class="bv-review-grid">
+            <div class="bv-review-card">
+                <div class="bv-stars">
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-half"></i>
+                </div>
+                <p>
+                    Found a thriller for my weekend read in under five minutes. The cover, price, and author details were all easy to scan.
+                </p>
+                <strong>Aarav Sharma</strong>
+                <span>Mumbai</span>
+            </div>
+
+            <div class="bv-review-card">
+                <div class="bv-stars">
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                <p>
+                    I ordered books for our reading group. Seeing regular and bulk prices clearly before checkout made the decision simple.
+                </p>
+                <strong>Priya Nair</strong>
+                <span>Bengaluru Book Club</span>
+            </div>
+
+            <div class="bv-review-card">
+                <div class="bv-stars">
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star"></i>
+                </div>
+                <p>
+                    The catalogue feels organised. I could compare history and sci-fi titles without opening too many tabs.
+                </p>
+                <strong>Rahul Mehta</strong>
+                <span>Delhi</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="container bv-section-space">
+        <div class="bv-newsletter-card">
+            <div>
+                <p class="bv-eyebrow">Subscribe</p>
+                <h2>Get New Books In Your Inbox</h2>
+                <p>
+                    Join the BookVerse newsletter for new arrivals, recommendations,
+                    reader picks, and special offers.
+                </p>
+            </div>
+
+            <form class="bv-newsletter-form" asp-controller="Home" asp-action="SubscribeNewsletter" method="post" id="newsletter">
+                @Html.AntiForgeryToken()
+                <input type="email" name="email" placeholder="Enter your email address" autocomplete="email" required />
+                <button type="submit">
+                    Subscribe
+                    <i class="bi bi-send"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="container bv-section-space">
+        <div class="bv-section-header">
+            <div>
+                <p class="bv-eyebrow">Reader Benefits</p>
+                <h2>Why Readers Choose BookVerse</h2>
+                <p>A simple bookstore experience with clean browsing, secure checkout, and rich product details.</p>
+            </div>
+        </div>
+
+        <div class="bv-benefit-grid">
+            <div class="bv-benefit-card">
+                <i class="bi bi-book-half"></i>
+                <h3>Curated Books</h3>
+                <p>Browse books with authors, categories, companies, cover images, and ISBN details.</p>
+            </div>
+
+            <div class="bv-benefit-card">
+                <i class="bi bi-cash-stack"></i>
+                <h3>Tiered Pricing</h3>
+                <p>See list price, regular price, 50+ pricing, and 100+ pricing clearly.</p>
+            </div>
+
+            <div class="bv-benefit-card">
+                <i class="bi bi-cart-check"></i>
+                <h3>Easy Cart Flow</h3>
+                <p>Add books to cart, review quantities, and continue toward checkout smoothly.</p>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<style>
+    :root {
+        --bv-navy: #111322;
+        --bv-gold: #d89b2b;
+        --bv-red: #c44235;
+        --bv-cream: #fbf7ef;
+        --bv-card: #ffffff;
+        --bv-border: #eadfce;
+        --bv-muted: #6b7280;
+        --bv-green: #198754;
+        --bv-text: #15172a;
+    }
+
+    .bv-home-page {
+        background: radial-gradient(circle at top left, rgba(216,155,43,.10), transparent 28%), linear-gradient(180deg, #fffaf1 0%, #fbf7ef 45%, #f7f1e7 100%);
+        min-height: 100vh;
+        color: var(--bv-text);
+    }
+
+    .bv-hero-section {
+        min-height: 620px;
+        display: flex;
+        align-items: center;
+        padding: 5rem 0 7rem;
+        background: linear-gradient(90deg, rgba(251,247,239,.96), rgba(251,247,239,.82)), url('/images/products/book1.jpg');
+        background-size: cover;
+        background-position: center;
+        border-bottom: 1px solid var(--bv-border);
+    }
+
+    .bv-eyebrow {
+        text-transform: uppercase;
+        color: var(--bv-gold);
+        letter-spacing: .18em;
+        font-size: .78rem;
+        font-weight: 900;
+        margin-bottom: .8rem;
+    }
+
+    .bv-hero-title {
+        font-family: Georgia, 'Times New Roman', serif;
+        color: var(--bv-navy);
+        font-size: clamp(3rem, 6vw, 5.4rem);
+        line-height: .98;
+        font-weight: 900;
+        margin-bottom: 1.4rem;
+    }
+
+        .bv-hero-title span {
+            color: var(--bv-gold);
+            font-style: italic;
+        }
+
+    .bv-hero-text {
+        max-width: 680px;
+        color: #1f2937;
+        font-size: 1.24rem;
+        line-height: 1.9;
+        margin-bottom: 2rem;
+    }
+
+    .bv-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .bv-primary-btn,
+    .bv-secondary-btn,
+    .bv-card-btn {
+        border-radius: 10px;
+        padding: .9rem 1.6rem;
+        font-weight: 900;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        font-size: .9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+    }
+
+    .bv-primary-btn {
+        background: var(--bv-navy);
+        color: #fff;
+        border: 1px solid var(--bv-navy);
+    }
+
+        .bv-primary-btn:hover {
+            background: #070916;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    .bv-secondary-btn {
+        background: rgba(255,255,255,.78);
+        color: var(--bv-navy);
+        border: 1px solid #d8ccbb;
+    }
+
+        .bv-secondary-btn:hover {
+            color: var(--bv-navy);
+            border-color: var(--bv-gold);
+            background: #fff;
+        }
+
+    .bv-hero-showcase {
+        position: relative;
+        background: rgba(255,255,255,.78);
+        border: 1px solid var(--bv-border);
+        border-radius: 22px;
+        padding: 1.7rem;
+        display: grid;
+        grid-template-columns: 145px 1fr;
+        gap: 1.2rem;
+        box-shadow: 0 22px 55px rgba(17,19,34,.12);
+        backdrop-filter: blur(8px);
+    }
+
+    .bv-showcase-cover {
+        width: 145px;
+        height: 210px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f4ead8;
+        border: 1px solid #dfcfb8;
+        box-shadow: 0 16px 34px rgba(17,19,34,.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .bv-showcase-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    .bv-cover-placeholder {
+        color: #aa8d61;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .4rem;
+        font-weight: 800;
+    }
+
+        .bv-cover-placeholder i {
+            font-size: 2.5rem;
+        }
+
+    .bv-showcase-list {
+        display: flex;
+        flex-direction: column;
+        gap: .8rem;
+        justify-content: center;
+    }
+
+    .bv-showcase-item {
+        background: var(--bv-navy);
+        color: #fff;
+        border-radius: 8px;
+        padding: .85rem 1rem;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 1.05rem;
+        font-weight: 800;
+        box-shadow: 0 8px 20px rgba(17,19,34,.12);
+    }
+
+        .bv-showcase-item:nth-child(2),
+        .bv-showcase-item.alt {
+            background: #6b3a21;
+        }
+
+        .bv-showcase-item:nth-child(3),
+        .bv-showcase-item.blue {
+            background: #21364f;
+        }
+
+    .bv-discount-badge {
+        position: absolute;
+        right: -28px;
+        bottom: -28px;
+        width: 126px;
+        height: 126px;
+        border-radius: 50%;
+        background: #f0c867;
+        border: 7px solid #fff;
+        color: var(--bv-navy);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        box-shadow: 0 12px 28px rgba(17,19,34,.14);
+    }
+
+        .bv-discount-badge span {
+            font-size: .72rem;
+            font-weight: 900;
+            letter-spacing: .08em;
+        }
+
+        .bv-discount-badge strong {
+            font-size: 2.1rem;
+            line-height: 1;
+            font-weight: 900;
+        }
+
+    .bv-about-band {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+        gap: 2rem;
+        align-items: center;
+        background: #111322;
+        color: #fff;
+        border-radius: 18px;
+        padding: 2.4rem;
+        box-shadow: 0 18px 45px rgba(17,19,34,.12);
+    }
+
+    .bv-about-copy h2 {
+        color: #fff;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1;
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .bv-about-copy p {
+        color: rgba(255,255,255,.76);
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin-bottom: 1.2rem;
+    }
+
+    .bv-about-link {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        color: var(--bv-gold);
+        text-decoration: none;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+        .bv-about-link:hover {
+            color: #fff;
+        }
+
+    .bv-about-stats {
+        display: grid;
+        gap: .8rem;
+    }
+
+        .bv-about-stats div {
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 10px;
+            padding: 1.05rem 1.2rem;
+        }
+
+        .bv-about-stats strong {
+            display: block;
+            color: var(--bv-gold);
+            font-size: 1.55rem;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .bv-about-stats span {
+            color: rgba(255,255,255,.76);
+            font-weight: 700;
+        }
+    .bv-feature-strip {
+        margin-top: -58px;
+        position: relative;
+        z-index: 5;
+        background: rgba(255,255,255,.95);
+        border: 1px solid var(--bv-border);
+        border-radius: 18px;
+        padding: 1.5rem 2rem;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        box-shadow: 0 18px 45px rgba(17,19,34,.08);
+    }
+
+    .bv-feature-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .bv-feature-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: #f4ead8;
+        color: var(--bv-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .bv-feature-item h3 {
+        color: var(--bv-navy);
+        font-size: 1rem;
+        font-weight: 900;
+        margin: 0 0 .2rem;
+    }
+
+    .bv-feature-item p {
+        color: var(--bv-muted);
+        margin: 0;
+        font-size: .9rem;
+    }
+
+    .bv-section-space {
+        padding-top: 5.5rem;
+        padding-bottom: 3rem;
+    }
+
+    .bv-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+        .bv-section-header h2,
+        .bv-offer-card h2,
+        .bv-rewards-card h2,
+        .bv-newsletter-card h2 {
+            font-family: Georgia, 'Times New Roman', serif;
+            color: var(--bv-navy);
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 0;
+        }
+
+        .bv-section-header p {
+            color: var(--bv-muted);
+            margin: .7rem 0 0;
+        }
+
+    .bv-link-btn {
+        color: var(--bv-red);
+        font-weight: 900;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        white-space: nowrap;
+    }
+
+        .bv-link-btn:hover {
+            color: var(--bv-gold);
+        }
+
+    .bv-book-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.4rem;
+    }
+
+    .bv-book-card,
+    .bv-benefit-card,
+    .bv-review-card,
+    .bv-highlight-card,
+    .bv-mood-card {
+        background: rgba(255,255,255,.94);
+        border: 1px solid var(--bv-border);
+        border-radius: 18px;
+        box-shadow: 0 14px 34px rgba(17,19,34,.08);
+        transition: all .22s ease;
+    }
+
+    .bv-book-card {
+        overflow: hidden;
+    }
+
+        .bv-book-card:hover,
+        .bv-mood-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 46px rgba(17,19,34,.13);
+            border-color: rgba(216,155,43,.55);
+        }
+
+    .bv-book-cover-wrap {
+        position: relative;
+        height: 300px;
+        background: #f4ead8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .bv-book-cover {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .bv-book-cover-placeholder {
+        color: #aa8d61;
+        font-size: 3rem;
+    }
+
+    .bv-category-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: var(--bv-navy);
+        color: #fff;
+        border-radius: 999px;
+        padding: .36rem .85rem;
+        font-size: .75rem;
+        font-weight: 900;
+    }
+
+    .bv-book-info {
+        padding: 1.2rem;
+    }
+
+        .bv-book-info h3 {
+            color: var(--bv-navy);
+            font-size: 1.2rem;
+            font-weight: 900;
+            margin: 0 0 .3rem;
+            line-height: 1.25;
+        }
+
+    .bv-author {
+        color: var(--bv-muted);
+        margin-bottom: .8rem;
+    }
+
+    .bv-book-meta {
+        color: var(--bv-muted);
+        font-size: .85rem;
+        margin-bottom: .9rem;
+    }
+
+        .bv-book-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+        }
+
+    .bv-price-line {
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+        margin-bottom: 1rem;
+    }
+
+    .bv-list-price {
+        color: var(--bv-muted);
+        text-decoration: line-through;
+        font-weight: 800;
+    }
+
+    .bv-main-price {
+        color: var(--bv-green);
+        font-size: 1.2rem;
+        font-weight: 900;
+    }
+
+    .bv-card-btn {
+        width: 100%;
+        justify-content: center;
+        background: var(--bv-navy);
+        color: #fff;
+        border: 1px solid var(--bv-navy);
+        padding: .72rem 1rem;
+    }
+
+        .bv-card-btn:hover {
+            background: #070916;
+            color: #fff;
+        }
+
+    .bv-empty-box {
+        background: rgba(255,255,255,.94);
+        border: 1px solid var(--bv-border);
+        border-radius: 18px;
+        padding: 3rem 1.5rem;
+        text-align: center;
+        box-shadow: 0 14px 34px rgba(17,19,34,.08);
+    }
+
+        .bv-empty-box i {
+            color: var(--bv-gold);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .bv-empty-box h3 {
+            color: var(--bv-navy);
+            font-weight: 900;
+        }
+
+        .bv-empty-box p {
+            color: var(--bv-muted);
+        }
+
+    .bv-highlight-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 1.4rem;
+    }
+
+    .bv-highlight-card {
+        padding: 1.6rem;
+    }
+
+        .bv-highlight-card.large {
+            background: linear-gradient(135deg, rgba(17,19,34,.96), rgba(80,55,30,.94));
+            color: #fff;
+        }
+
+        .bv-highlight-card i,
+        .bv-benefit-card i,
+        .bv-mood-card i {
+            color: var(--bv-gold);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .bv-highlight-card h3,
+        .bv-benefit-card h3 {
+            color: var(--bv-navy);
+            font-weight: 900;
+            font-size: 1.15rem;
+        }
+
+        .bv-highlight-card.large h3 {
+            color: #fff;
+        }
+
+        .bv-highlight-card p,
+        .bv-benefit-card p {
+            color: var(--bv-muted);
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        .bv-highlight-card.large p {
+            color: #d8dbe8;
+        }
+
+    .bv-offer-section {
+        padding: 2rem 0;
+    }
+
+    .bv-offer-card {
+        background: linear-gradient(135deg, rgba(17,19,34,.96), rgba(38,30,26,.96));
+        border-radius: 22px;
+        padding: 2.4rem;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+        box-shadow: 0 20px 46px rgba(17,19,34,.18);
+    }
+
+        .bv-offer-card h2 {
+            color: #fff;
+            font-size: 2.1rem;
+            margin-bottom: .8rem;
+        }
+
+        .bv-offer-card p {
+            color: #d8dbe8;
+            max-width: 720px;
+            line-height: 1.8;
+            margin-bottom: 0;
+        }
+
+    .bv-bestseller-list {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .bv-bestseller-row {
+        background: rgba(255,255,255,.94);
+        border: 1px solid var(--bv-border);
+        border-radius: 16px;
+        padding: 1rem 1.2rem;
+        display: grid;
+        grid-template-columns: 54px 1fr auto;
+        align-items: center;
+        gap: 1rem;
+        text-decoration: none;
+        color: var(--bv-navy);
+        box-shadow: 0 12px 28px rgba(17,19,34,.07);
+    }
+
+        .bv-bestseller-row:hover {
+            border-color: rgba(216,155,43,.55);
+            color: var(--bv-navy);
+        }
+
+    .bv-rank {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--bv-navy);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+    }
+
+    .bv-bestseller-row strong {
+        display: block;
+        font-weight: 900;
+    }
+
+    .bv-bestseller-row small {
+        color: var(--bv-muted);
+    }
+
+    .bv-row-price {
+        color: var(--bv-green);
+        font-weight: 900;
+    }
+
+    .bv-rewards-card,
+    .bv-newsletter-card {
+        background: rgba(255,255,255,.94);
+        border: 1px solid var(--bv-border);
+        border-radius: 22px;
+        padding: 2.2rem;
+        box-shadow: 0 16px 40px rgba(17,19,34,.09);
+        display: flex;
+        justify-content: space-between;
+        gap: 2rem;
+        align-items: center;
+    }
+
+        .bv-rewards-card p,
+        .bv-newsletter-card p {
+            color: var(--bv-muted);
+            line-height: 1.8;
+            max-width: 760px;
+            margin-bottom: 0;
+        }
+
+    .bv-reward-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 110px);
+        gap: 1rem;
+    }
+
+        .bv-reward-stats div {
+            background: #fffaf1;
+            border: 1px solid #e8d7b9;
+            border-radius: 16px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .bv-reward-stats strong {
+            display: block;
+            color: var(--bv-navy);
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+
+        .bv-reward-stats span {
+            color: var(--bv-muted);
+            font-size: .8rem;
+            font-weight: 800;
+        }
+
+    .bv-mood-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.4rem;
+    }
+
+    .bv-mood-card {
+        text-decoration: none;
+        padding: 1.5rem;
+        color: var(--bv-navy);
+        display: flex;
+        flex-direction: column;
+        gap: .2rem;
+    }
+
+        .bv-mood-card strong {
+            font-size: 1.1rem;
+            font-weight: 900;
+        }
+
+        .bv-mood-card span {
+            color: var(--bv-muted);
+        }
+
+    .bv-review-grid,
+    .bv-benefit-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+    }
+
+    .bv-review-card,
+    .bv-benefit-card {
+        padding: 1.6rem;
+    }
+
+    .bv-stars {
+        color: var(--bv-gold);
+        margin-bottom: 1rem;
+    }
+
+    .bv-review-card p {
+        color: #374151;
+        line-height: 1.8;
+        margin-bottom: 1rem;
+    }
+
+    .bv-review-card strong {
+        display: block;
+        color: var(--bv-navy);
+        font-weight: 900;
+    }
+
+    .bv-review-card span {
+        color: var(--bv-muted);
+        font-size: .86rem;
+    }
+
+    .bv-newsletter-form {
+        display: flex;
+        gap: .8rem;
+        min-width: 420px;
+    }
+
+        .bv-newsletter-form input {
+            flex: 1;
+            border: 1px solid #ded4c5;
+            border-radius: 10px;
+            padding: .9rem 1rem;
+            outline: none;
+        }
+
+            .bv-newsletter-form input:focus {
+                border-color: var(--bv-gold);
+                box-shadow: 0 0 0 .18rem rgba(216,155,43,.15);
+            }
+
+        .bv-newsletter-form button {
+            border: 0;
+            background: var(--bv-navy);
+            color: #fff;
+            border-radius: 10px;
+            padding: .9rem 1.2rem;
+            font-weight: 900;
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+            .bv-newsletter-form button:hover {
+                background: #070916;
+            }
+
+    @@media (max-width: 1199px) {
+        .bv-book-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .bv-about-band {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+        gap: 2rem;
+        align-items: center;
+        background: #111322;
+        color: #fff;
+        border-radius: 18px;
+        padding: 2.4rem;
+        box-shadow: 0 18px 45px rgba(17,19,34,.12);
+    }
+
+    .bv-about-copy h2 {
+        color: #fff;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1;
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .bv-about-copy p {
+        color: rgba(255,255,255,.76);
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin-bottom: 1.2rem;
+    }
+
+    .bv-about-link {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        color: var(--bv-gold);
+        text-decoration: none;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+        .bv-about-link:hover {
+            color: #fff;
+        }
+
+    .bv-about-stats {
+        display: grid;
+        gap: .8rem;
+    }
+
+        .bv-about-stats div {
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 10px;
+            padding: 1.05rem 1.2rem;
+        }
+
+        .bv-about-stats strong {
+            display: block;
+            color: var(--bv-gold);
+            font-size: 1.55rem;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .bv-about-stats span {
+            color: rgba(255,255,255,.76);
+            font-weight: 700;
+        }
+    .bv-feature-strip {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .bv-mood-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .bv-highlight-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 991px) {
+        .bv-about-band {
+            grid-template-columns: 1fr;
+            padding: 1.6rem;
+            border-radius: 12px;
+        }
+
+        .bv-about-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .bv-hero-section {
+            padding-top: 4rem;
+        }
+
+        .bv-hero-showcase {
+            max-width: 520px;
+        }
+
+        .bv-book-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .bv-section-header,
+        .bv-offer-card,
+        .bv-rewards-card,
+        .bv-newsletter-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .bv-review-grid,
+        .bv-benefit-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bv-newsletter-form {
+            min-width: 100%;
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 650px) {
+        .bv-hero-title {
+            font-size: 3rem;
+        }
+
+        .bv-hero-showcase {
+            grid-template-columns: 1fr;
+        }
+
+        .bv-showcase-cover {
+            margin: 0 auto;
+        }
+
+        .bv-discount-badge {
+            right: 10px;
+            bottom: -35px;
+        }
+
+        .bv-about-band {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+        gap: 2rem;
+        align-items: center;
+        background: #111322;
+        color: #fff;
+        border-radius: 18px;
+        padding: 2.4rem;
+        box-shadow: 0 18px 45px rgba(17,19,34,.12);
+    }
+
+    .bv-about-copy h2 {
+        color: #fff;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1;
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .bv-about-copy p {
+        color: rgba(255,255,255,.76);
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin-bottom: 1.2rem;
+    }
+
+    .bv-about-link {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        color: var(--bv-gold);
+        text-decoration: none;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+        .bv-about-link:hover {
+            color: #fff;
+        }
+
+    .bv-about-stats {
+        display: grid;
+        gap: .8rem;
+    }
+
+        .bv-about-stats div {
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 10px;
+            padding: 1.05rem 1.2rem;
+        }
+
+        .bv-about-stats strong {
+            display: block;
+            color: var(--bv-gold);
+            font-size: 1.55rem;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .bv-about-stats span {
+            color: rgba(255,255,255,.76);
+            font-weight: 700;
+        }
+    .bv-feature-strip {
+            grid-template-columns: 1fr;
+            margin-top: -30px;
+        }
+
+        .bv-book-grid,
+        .bv-mood-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bv-book-cover-wrap {
+            height: 360px;
+        }
+
+        .bv-bestseller-row {
+            grid-template-columns: 44px 1fr;
+        }
+
+        .bv-row-price {
+            grid-column: 2;
+        }
+
+        .bv-reward-stats {
+            grid-template-columns: 1fr;
+            width: 100%;
+        }
+
+        .bv-newsletter-form {
+            flex-direction: column;
+        }
+    }
+
+    /* Final mobile About override: keeps text readable and prevents narrow columns. */
+    @@media (max-width: 650px) {
+        #about {
+            padding-left: .75rem;
+            padding-right: .75rem;
+        }
+
+        #about .bv-about-band {
+            display: block !important;
+            grid-template-columns: none !important;
+            width: 100%;
+            padding: 1.35rem !important;
+            border-radius: 12px;
+        }
+
+        #about .bv-about-copy {
+            width: 100%;
+            max-width: none;
+        }
+
+        #about .bv-about-copy h2 {
+            font-size: 2rem;
+            line-height: 1.08;
+            margin-bottom: .85rem;
+        }
+
+        #about .bv-about-copy p {
+            font-size: .95rem;
+            line-height: 1.65;
+            max-width: none;
+        }
+
+        #about .bv-about-link {
+            margin-bottom: 1rem;
+        }
+
+        #about .bv-about-stats {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            width: 100%;
+            gap: .75rem;
+            margin-top: 1rem;
+        }
+
+        #about .bv-about-stats div {
+            padding: .95rem 1rem;
+        }
+
+        #about .bv-about-stats strong {
+            font-size: 1.35rem;
+        }
+    }
+</style>
+
+
+
+
+

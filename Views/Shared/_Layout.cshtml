@@ -1,0 +1,622 @@
+﻿  
+@using BookVerse.Utilities
+@using System.Security.Claims
+@inject BookVerse.DataAccess.Repository.IRepository.IUnitOfWork UnitOfWork
+
+@{
+    int cartCount = 0;
+    if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        cartCount = UnitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId).Sum(c => c.Count);
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - BookVerse</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+            :root {
+                --bv-navy: #111322;
+                --bv-gold: #d89b2b;
+                --bv-red: #c44235;
+                --bv-cream: #fbf7ef;
+                --bv-text: #15172a;
+                --bv-muted: #6b7280;
+                --bv-border: #eadfce;
+            }
+
+            body {
+                background: var(--bv-cream);
+                color: var(--bv-text);
+                min-height: 100vh;
+            }
+
+            .bv-navbar {
+                background: var(--bv-navy);
+                border-bottom: 3px solid var(--bv-gold);
+                padding: .85rem 0;
+                box-shadow: 0 8px 24px rgba(17,19,34,.18);
+            }
+
+            .bv-brand {
+                display: flex;
+                align-items: center;
+                gap: .65rem;
+                text-decoration: none;
+            }
+
+            .bv-logo {
+                width: 35px;
+                height: 35px;
+                object-fit: contain;
+            }
+
+            .bv-brand-text {
+                font-family: Georgia, 'Times New Roman', serif;
+                color: var(--bv-gold);
+                font-size: 1.85rem;
+                font-weight: 800;
+                letter-spacing: .03em;
+            }
+
+            .bv-navbar .nav-link {
+                color: #ffffff !important;
+                font-size: .88rem;
+                font-weight: 600;
+                letter-spacing: .08em;
+                text-transform: uppercase;
+                padding: .65rem .95rem !important;
+                border-radius: 8px;
+                transition: all .2s ease;
+            }
+
+                .bv-navbar .nav-link:hover {
+                    color: var(--bv-gold) !important;
+                    background: rgba(255,255,255,.06);
+                }
+
+            .bv-auth-btn {
+                border-radius: 6px;
+                padding: .55rem 1.1rem;
+                font-size: .85rem;
+                letter-spacing: .07em;
+                text-transform: uppercase;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: .4rem;
+            }
+
+            .bv-login {
+                color: #fff;
+                border: 1px solid rgba(255,255,255,.35);
+                background: transparent;
+            }
+
+                .bv-login:hover {
+                    color: var(--bv-gold);
+                    border-color: var(--bv-gold);
+                }
+
+            .bv-register {
+                color: #fff;
+                border: 1px solid var(--bv-red);
+                background: var(--bv-red);
+            }
+
+                .bv-register:hover {
+                    color: #fff;
+                    background: #a9342b;
+                }
+
+            .bv-user-pill {
+                color: #fff;
+                border: 1px solid rgba(255,255,255,.28);
+                background: rgba(255,255,255,.05);
+                border-radius: 6px;
+                padding: .55rem .9rem;
+                font-size: .82rem;
+                letter-spacing: .04em;
+            }
+
+            .bv-logout-btn {
+                color: #fff;
+                border: 1px solid rgba(255,255,255,.35);
+                background: transparent;
+                border-radius: 6px;
+                padding: .55rem .95rem;
+                font-size: .82rem;
+                letter-spacing: .05em;
+                text-transform: uppercase;
+            }
+
+                .bv-logout-btn:hover {
+                    color: var(--bv-gold);
+                    border-color: var(--bv-gold);
+                }
+
+            .bv-main {
+                min-height: calc(100vh - 170px);
+            }
+
+            .bv-footer {
+                background: #fffaf1;
+                border-top: 1px solid var(--bv-border);
+                padding: 2rem 0;
+                color: var(--bv-muted);
+                font-size: .92rem;
+            }
+
+            .bv-footer-inner {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1.5rem;
+            }
+
+            .bv-footer-brand {
+                display: inline-block;
+                color: var(--bv-navy);
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 1.45rem;
+                font-weight: 900;
+                text-decoration: none;
+                margin-bottom: .35rem;
+            }
+
+            .bv-footer-copy {
+                margin: 0;
+                max-width: 430px;
+                line-height: 1.6;
+            }
+
+            .bv-footer-links {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+                gap: .55rem;
+            }
+
+                .bv-footer-links a {
+                    color: var(--bv-muted);
+                    text-decoration: none;
+                    font-weight: 800;
+                    padding: .55rem .75rem;
+                    border-radius: 6px;
+                    transition: all .2s ease;
+                }
+
+                    .bv-footer-links a:hover {
+                        color: var(--bv-navy);
+                        background: #f4ead8;
+                    }
+
+            .bv-footer-meta {
+                color: var(--bv-muted);
+                font-size: .82rem;
+                margin-top: .4rem;
+            }
+
+            .bv-cart-count {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 1.35rem;
+                height: 1.35rem;
+                padding: 0 .35rem;
+                border-radius: 999px;
+                background: var(--bv-gold);
+                color: var(--bv-navy);
+                font-size: .75rem;
+                font-weight: 900;
+            }
+
+            .bv-alert-wrap {
+                position: fixed;
+                top: 92px;
+                right: 24px;
+                z-index: 1080;
+                width: min(360px, calc(100vw - 32px));
+            }
+
+            .bv-mobile-cart {
+                display: none;
+            }
+            .navbar-toggler {
+                border: 1px solid rgba(255,255,255,.45);
+                border-radius: 10px;
+                padding: .65rem .75rem;
+                transition: all .2s ease;
+            }
+
+            .navbar-toggler:focus {
+                box-shadow: 0 0 0 .2rem rgba(216,155,43,.35);
+            }
+
+            @@media (max-width: 991px) {
+                .bv-navbar {
+                    padding: .45rem 0;
+                }
+
+                .bv-navbar .container {
+                    align-items: center;
+                }
+
+                .bv-brand-text {
+                    font-size: 1.35rem;
+                }
+
+                /* Final mobile cart shortcut: sits beside the menu button. */
+                .bv-mobile-cart {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 38px;
+                    height: 38px;
+                    margin-left: auto;
+                    margin-right: .45rem;
+                    color: var(--bv-navy);
+                    background: #fffaf1;
+                    border: 1px solid rgba(216,155,43,.45);
+                    border-radius: 10px;
+                    text-decoration: none;
+                    box-shadow: 0 2px 0 rgba(216,155,43,.28);
+                }
+
+                .bv-mobile-cart i {
+                    font-size: 1.05rem;
+                    line-height: 1;
+                }
+
+                .bv-mobile-cart span {
+                    position: absolute;
+                    top: -6px;
+                    right: -6px;
+                    min-width: 17px;
+                    height: 17px;
+                    padding: 0 4px;
+                    border-radius: 999px;
+                    background: var(--bv-gold);
+                    color: var(--bv-navy);
+                    font-size: .68rem;
+                    font-weight: 900;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .bv-menu-cart {
+                    display: none !important;
+                }
+
+                .navbar-toggler {
+                    width: 38px;
+                    height: 38px;
+                    margin-left: 0;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    background: #fffaf1 !important;
+                    border: 1px solid rgba(216,155,43,.45);
+                }
+                .navbar-toggler-icon {
+                    width: 1.15rem;
+                    height: 1.15rem;
+                    background-size: 1.15rem 1.15rem;
+                    margin: 0;
+                }
+
+                #bookVerseNavbar {
+                    width: 100%;
+                    margin-top: .55rem;
+                    padding: .7rem;
+                    background: rgba(255,255,255,.06);
+                    border: 1px solid rgba(255,255,255,.12);
+                    border-radius: 8px;
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+                }
+
+                #bookVerseNavbar .navbar-nav {
+                    gap: .45rem;
+                }
+
+                .bv-navbar .nav-link {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: .7rem .85rem !important;
+                    background: rgba(255,255,255,.07);
+                    border: 1px solid rgba(255,255,255,.10);
+                    border-radius: 6px;
+                }
+
+                .bv-navbar .nav-link::after {
+                    content: '›';
+                    color: var(--bv-gold);
+                    font-size: 1.2rem;
+                    line-height: 1;
+                }
+
+                .bv-auth-area {
+                    display: grid !important;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    width: 100%;
+                    margin-top: .9rem;
+                    padding-top: .9rem;
+                    border-top: 1px solid rgba(255,255,255,.12);
+                    align-items: stretch !important;
+                    gap: .7rem !important;
+                }
+
+                .bv-auth-btn,
+                .bv-logout-btn {
+                    width: 100%;
+                    min-height: 44px;
+                    justify-content: center;
+                    text-align: center;
+                }
+
+                .bv-user-pill {
+                    grid-column: 1 / -1;
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+    
+            /* Final mobile footer override: full-width, balanced links. */
+            @@media (max-width: 650px) {
+                .bv-footer {
+                    padding: 1.5rem 0 1.8rem;
+                }
+
+                .bv-footer-inner {
+                    display: block;
+                    text-align: center;
+                }
+
+                .bv-footer-brand {
+                    font-size: 1.35rem;
+                    margin-bottom: .45rem;
+                }
+
+                .bv-footer-copy {
+                    max-width: 280px;
+                    margin: 0 auto;
+                    line-height: 1.55;
+                    font-size: .86rem;
+                }
+
+                .bv-footer-meta {
+                    margin-top: .65rem;
+                    font-size: .76rem;
+                }
+
+                .bv-footer-links {
+                    width: 100%;
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: .55rem;
+                    margin-top: 1.1rem;
+                    justify-content: stretch;
+                }
+
+                .bv-footer-links a {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 40px;
+                    padding: .55rem .35rem;
+                    background: #fff;
+                    border: 1px solid var(--bv-border);
+                    border-radius: 6px;
+                    font-size: .82rem;
+                }
+
+                .bv-footer-links a:last-child {
+                    grid-column: 1 / -1;
+                }
+            }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg bv-navbar">
+            <div class="container">
+
+                <a class="bv-brand" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo.png" class="bv-logo" alt="BookVerse Logo"
+                         onerror="this.style.display='none';" />
+                    <span class="bv-brand-text">BookVerse</span>
+                </a>
+
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <a class="bv-mobile-cart" asp-controller="Cart" asp-action="Index" aria-label="Open cart">
+                        <i class="bi bi-cart3"></i>
+                        @if (cartCount > 0)
+                        {
+                            <span>@cartCount</span>
+                        }
+                    </a>
+                }
+                <button class="navbar-toggler bg-light"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#bookVerseNavbar"
+                        aria-controls="bookVerseNavbar"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="bookVerseNavbar">
+
+                    <ul class="navbar-nav ms-lg-4 me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Products" asp-action="Index">Books</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index" asp-fragment="about">About</a>
+                        </li>
+
+                        @if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Categories" asp-action="Index">Categories</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Companies" asp-action="Index">Companies</a>
+                            </li>
+                        }
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Order" asp-action="Index">My Orders</a>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="d-flex gap-2 align-items-center bv-auth-area">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <a class="bv-auth-btn bv-login bv-menu-cart" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-cart3"></i>
+                                Cart
+                                @if (cartCount > 0)
+                                {
+                                    <span class="bv-cart-count">@cartCount</span>
+                                }
+                            </a>
+
+                            <span class="bv-user-pill">
+                                @(User.Identity.Name)
+                            </span>
+
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                <button type="submit" class="bv-logout-btn">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Logout
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="bv-auth-btn bv-login" asp-controller="Account" asp-action="Login">
+                                Login
+                            </a>
+
+                            <a class="bv-auth-btn bv-register" asp-controller="Account" asp-action="Register">
+                                Register
+                            </a>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    @if (TempData["success"] != null || TempData["error"] != null)
+    {
+        <div class="bv-alert-wrap">
+            @if (TempData["success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                    @TempData["success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                    @TempData["error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+        </div>
+    }
+
+    <main role="main" class="bv-main">
+        @RenderBody()
+    </main>
+
+    <footer class="bv-footer">
+        <div class="container bv-footer-inner">
+            <div>
+                <a class="bv-footer-brand" asp-controller="Home" asp-action="Index">BookVerse</a>
+                <p class="bv-footer-copy">Curated books, clear rupee pricing, and simple checkout for everyday readers.</p>
+                <div class="bv-footer-meta">© @DateTime.Now.Year BookVerse. All rights reserved.</div>
+            </div>
+
+            <nav class="bv-footer-links" aria-label="Footer navigation">
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                <a asp-controller="Products" asp-action="Index">Books</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="about">About</a>
+                <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+                <a href="mailto:support@bookverse.in">Contact</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script id="bookverse-navbar-fallback">
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.bootstrap && window.bootstrap.Collapse) {
+                return;
+            }
+
+            var toggler = document.querySelector('[data-bs-target="#bookVerseNavbar"]');
+            var menu = document.getElementById('bookVerseNavbar');
+
+            if (!toggler || !menu) {
+                return;
+            }
+
+            toggler.addEventListener('click', function () {
+                var isOpen = menu.classList.toggle('show');
+                toggler.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

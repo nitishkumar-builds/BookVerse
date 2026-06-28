@@ -1,0 +1,366 @@
+﻿@model BookVerse.Models.ViewModels.UserProfileVM
+
+@{
+    ViewData["Title"] = "My Profile — BookVerse";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .profile-page {
+        background: #0f0e17;
+        min-height: 100vh;
+        padding: 3rem 0 5rem;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .profile-container {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    .profile-breadcrumb {
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.25);
+        margin-bottom: 2rem;
+    }
+
+        .profile-breadcrumb span {
+            color: #ff8906;
+        }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .avatar-circle {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff8906, #c0392b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: #fff;
+        flex-shrink: 0;
+        letter-spacing: 0.02em;
+    }
+
+    .header-info h1 {
+        font-family: 'Georgia', serif;
+        font-size: 1.5rem;
+        font-weight: normal;
+        color: #fffffe;
+        margin-bottom: 0.25rem;
+    }
+
+    .header-info .email {
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 0.4rem;
+    }
+
+    .role-badge {
+        display: inline-block;
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.65rem;
+        border-radius: 2px;
+        background: rgba(255,137,6,0.12);
+        color: #ff8906;
+        border: 1px solid rgba(255,137,6,0.25);
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .profile-card {
+        background: #1a1824;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+
+        .profile-card.full {
+            grid-column: 1 / -1;
+        }
+
+    .card-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.25);
+        margin-bottom: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .card-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+        }
+
+    .form-group {
+        margin-bottom: 1.1rem;
+    }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            color: #fffffe;
+            font-size: 0.88rem;
+            padding: 0.6rem 0.85rem;
+            font-family: 'Segoe UI', sans-serif;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+            .form-group input:focus {
+                outline: none;
+                border-color: #ff8906;
+                background: rgba(255,137,6,0.04);
+            }
+
+            .form-group input[readonly] {
+                color: rgba(255,255,255,0.3);
+                cursor: not-allowed;
+                border-color: rgba(255,255,255,0.05);
+            }
+
+                .form-group input[readonly]:focus {
+                    border-color: rgba(255,255,255,0.05);
+                    background: rgba(255,255,255,0.04);
+                }
+
+    .field-hint {
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.2);
+        margin-top: 0.3rem;
+    }
+
+    .validation-error {
+        font-size: 0.72rem;
+        color: #e74c3c;
+        margin-top: 0.3rem;
+    }
+
+    .form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .btn-save {
+        background: #ff8906;
+        border: none;
+        color: #0f0e17;
+        padding: 0.65rem 2rem;
+        border-radius: 5px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s;
+    }
+
+        .btn-save:hover {
+            background: #e07800;
+            transform: translateY(-1px);
+        }
+
+    .btn-cancel {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.45);
+        padding: 0.65rem 1.5rem;
+        border-radius: 5px;
+        font-size: 0.82rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        text-decoration: none;
+        transition: border-color 0.2s, color 0.2s;
+    }
+
+        .btn-cancel:hover {
+            border-color: rgba(255,255,255,0.25);
+            color: rgba(255,255,255,0.7);
+        }
+
+    .alert-success {
+        background: rgba(93,202,165,0.1);
+        border: 1px solid rgba(93,202,165,0.2);
+        color: #5dcaa5;
+        border-radius: 5px;
+        padding: 0.75rem 1rem;
+        font-size: 0.82rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-danger {
+        background: rgba(231,76,60,0.1);
+        border: 1px solid rgba(231,76,60,0.2);
+        color: #e74c3c;
+        border-radius: 5px;
+        padding: 0.75rem 1rem;
+        font-size: 0.82rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @@media (max-width: 640px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-card.full {
+            grid-column: 1;
+        }
+
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .btn-save, .btn-cancel {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="profile-page">
+    <div class="profile-container">
+
+        <div class="profile-breadcrumb">
+            <a asp-controller="Home" asp-action="Index" style="color:inherit;text-decoration:none">Home</a>
+            &nbsp;/&nbsp; <span>My Profile</span>
+        </div>
+
+        @if (TempData["success"] != null)
+        {
+            <div class="alert-success">✓ @TempData["success"]</div>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert-danger">
+                Please fix the errors below before saving.
+            </div>
+        }
+
+        <div class="profile-header">
+            <div class="avatar-circle">
+                @(Model.Name?.Length > 0 ? Model.Name.Substring(0, 1).ToUpper() : "?")@(Model.Name?.Length > 1 ? Model.Name.Split(' ').Length > 1 ? Model.Name.Split(' ')[1].Substring(0, 1).ToUpper() : "" : "")
+            </div>
+            <div class="header-info">
+                <h1>@Model.Name</h1>
+                <div class="email">@Model.Email</div>
+                <span class="role-badge">@(Model.Role ?? "Customer")</span>
+            </div>
+        </div>
+
+        <form asp-action="Profile" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="profile-grid">
+
+                <div class="profile-card full">
+                    <div class="card-label">Account Info</div>
+
+                    <div class="profile-grid" style="gap:1rem">
+                        <div class="form-group">
+                            <label asp-for="Name">Full Name</label>
+                            <input asp-for="Name" placeholder="Your full name" />
+                            <div class="validation-error">
+                                <span asp-validation-for="Name"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Email">Email Address</label>
+                            <input asp-for="Email" readonly />
+                            <div class="field-hint">Email cannot be changed here.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card full">
+                    <div class="card-label">Delivery Address</div>
+
+                    <div class="form-group">
+                        <label asp-for="StreetAddress">Street Address</label>
+                        <input asp-for="StreetAddress" placeholder="123 Main Street" />
+                    </div>
+
+                    <div class="profile-grid" style="gap:1rem">
+                        <div class="form-group">
+                            <label asp-for="City">City</label>
+                            <input asp-for="City" placeholder="City" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="State">State</label>
+                            <input asp-for="State" placeholder="State" />
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="max-width:200px">
+                        <label asp-for="PostalCode">Postal Code</label>
+                        <input asp-for="PostalCode" placeholder="000000" />
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <a asp-controller="Home" asp-action="Index" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

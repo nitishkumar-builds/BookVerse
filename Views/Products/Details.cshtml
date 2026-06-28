@@ -1,0 +1,623 @@
+﻿@model BookVerse.Models.ViewModels.ProductVM
+@using BookVerse.Utilities
+
+@{
+    ViewData["Title"] = "Product Details";
+
+      
+bool isAdminOrEmployee = User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee);
+
+    string coverPath = !string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? Url.Content(Model.ImageUrl)
+        : "";
+
+    double saveFor50 = Model.Price - Model.Price50;
+    double saveFor100 = Model.Price - Model.Price100;
+      
+
+}
+
+<div class="bv-details-page">
+
+          
+    <div class="container py-4 py-lg-5">
+
+        <div class="bv-breadcrumb mb-3">
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            <span>/</span>
+            <a asp-controller="Products" asp-action="Index">Books</a>
+            <span>/</span>
+            <span>@Model.Title</span>
+        </div>
+
+        <div class="bv-page-header mb-4">
+            <p class="bv-eyebrow mb-1">Book Details</p>
+            <h1>@Model.Title</h1>
+            <p>Explore book information, pricing tiers, publisher details, and cover preview.</p>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+                <div class="bv-side-card">
+
+                    <div class="bv-cover-frame">
+                        @if (!string.IsNullOrWhiteSpace(coverPath))
+                        {
+                            <img src="@coverPath" alt="@Model.Title" class="bv-cover-img" />
+                        }
+                        else
+                        {
+                            <div class="bv-cover-placeholder">
+                                <i class="bi bi-book"></i>
+                                <span>No Cover</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <h2 class="bv-book-title">@Model.Title</h2>
+                        <p class="bv-author">@Model.Author</p>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
+                        {
+                            <span class="bv-category-pill">@Model.CategoryName</span>
+                        }
+                    </div>
+
+                    <div class="bv-side-info mt-4">
+                        <span>Published By</span>
+                        <strong>@Model.CompanyName</strong>
+                    </div>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <form asp-action="AddToCart" method="post" class="bv-cart-box mt-4">
+                            <input type="hidden" name="productId" value="@Model.Id" />
+                            <label for="cartCount" class="form-label">Quantity</label>
+                            <input id="cartCount" name="count" type="number" min="1" max="1000" value="1" class="form-control" />
+                            <button type="submit" class="btn bv-add-cart-btn mt-3">
+                                <i class="bi bi-cart-plus"></i>
+                                Add to Cart
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn bv-add-cart-btn mt-4">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            Login to Add to Cart
+                        </a>
+                    }
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        @if (isAdminOrEmployee)
+                        {
+                            <a asp-action="Edit"
+                                   asp-route-id="@Model.Id"
+                                   class="btn bv-admin-edit-btn">
+                                <i class="bi bi-pencil-square"></i>
+                                Edit Product
+                            </a>
+
+                            <a asp-action="Delete"
+                                   asp-route-id="@Model.Id"
+                                   class="btn bv-admin-delete-btn">
+                                <i class="bi bi-trash"></i>
+                                Delete Product
+                            </a>
+                        }
+
+                        <a asp-action="Index" class="btn bv-back-btn">
+                            <i class="bi bi-arrow-left"></i>
+                            Back to Books
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+
+                <div class="bv-card">
+                    <div class="bv-section-title">
+                        <div>
+                            <i class="bi bi-info-circle"></i>
+                            <span>Book Information</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="bv-info-box">
+                                <span>Title</span>
+                                <strong>@Model.Title</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="bv-info-box">
+                                <span>Author</span>
+                                <strong>@Model.Author</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="bv-info-box">
+                                <span>Description</span>
+                                <p>@Model.Description</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="bv-info-box">
+                                <span>ISBN</span>
+                                <strong>@Model.ISBN</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="bv-info-box">
+                                <span>Category</span>
+                                <strong>@Model.CategoryName</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="bv-info-box">
+                                <span>Company</span>
+                                <strong>@Model.CompanyName</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bv-card mt-4">
+                    <div class="bv-section-title">
+                        <div>
+                            <i class="bi bi-tags"></i>
+                            <span>Pricing Tiers</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-3 col-6">
+                            <div class="bv-price-card muted">
+                                <span>List Price</span>
+                                <strong class="text-decoration-line-through">
+                                    ₹@Model.ListPrice.ToString("0.00")
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <div class="bv-price-card active">
+                                <span>Price 1+</span>
+                                <strong>₹@Model.Price.ToString("0.00")</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <div class="bv-price-card">
+                                <span>Price 50+</span>
+                                <strong>₹@Model.Price50.ToString("0.00")</strong>
+
+                                @if (saveFor50 > 0)
+                                {
+                                    <small>Save ₹@saveFor50.ToString("0.00")</small>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <div class="bv-price-card">
+                                <span>Price 100+</span>
+                                <strong>₹@Model.Price100.ToString("0.00")</strong>
+
+                                @if (saveFor100 > 0)
+                                {
+                                    <small>Save ₹@saveFor100.ToString("0.00")</small>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="bv-card mt-4">
+                    <div class="bv-section-title">
+                        <div>
+                            <i class="bi bi-image"></i>
+                            <span>Cover Image Path</span>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <code class="bv-image-url">@Model.ImageUrl</code>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No image URL available.</p>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+          
+
+</div>
+
+<style>
+    :root {
+        --bv-navy: #111322;
+        --bv-gold: #d89b2b;
+        --bv-red: #c44235;
+        --bv-cream: #fbf7ef;
+        --bv-card: #ffffff;
+        --bv-border: #eadfce;
+        --bv-muted: #6b7280;
+        --bv-green: #198754;
+        --bv-text: #15172a;
+    }
+
+    .bv-details-page {
+        min-height: 100vh;
+        background: radial-gradient(circle at top left, rgba(216,155,43,.10), transparent 28%), linear-gradient(180deg, #fffaf1 0%, #fbf7ef 45%, #f7f1e7 100%);
+    }
+
+    .bv-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        color: var(--bv-muted);
+        font-size: .9rem;
+    }
+
+        .bv-breadcrumb a {
+            color: var(--bv-red);
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+            .bv-breadcrumb a:hover {
+                color: var(--bv-gold);
+            }
+
+    .bv-eyebrow {
+        text-transform: uppercase;
+        color: var(--bv-gold);
+        letter-spacing: .16em;
+        font-size: .78rem;
+        font-weight: 900;
+    }
+
+    .bv-page-header h1 {
+        font-family: Georgia, 'Times New Roman', serif;
+        color: var(--bv-navy);
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin: 0;
+        position: relative;
+        display: inline-block;
+    }
+
+        .bv-page-header h1::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -9px;
+            width: 80px;
+            height: 3px;
+            background: var(--bv-gold);
+            border-radius: 999px;
+        }
+
+    .bv-page-header p {
+        margin-top: 1rem;
+        color: var(--bv-muted);
+    }
+
+    .bv-side-card,
+    .bv-card {
+        background: rgba(255,255,255,.94);
+        border: 1px solid var(--bv-border);
+        border-radius: 18px;
+        box-shadow: 0 14px 34px rgba(17,19,34,.08);
+    }
+
+    .bv-side-card {
+        padding: 1.5rem;
+        position: sticky;
+        top: 95px;
+    }
+
+    .bv-card {
+        padding: 1.5rem;
+    }
+
+    .bv-cover-frame {
+        width: 230px;
+        height: 330px;
+        margin: 0 auto;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f4ead8;
+        border: 1px solid #dfcfb8;
+        box-shadow: 0 20px 40px rgba(17,19,34,.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bv-cover-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .bv-cover-placeholder {
+        color: #aa8d61;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .5rem;
+        font-weight: 800;
+    }
+
+        .bv-cover-placeholder i {
+            font-size: 3rem;
+        }
+
+    .bv-book-title {
+        color: var(--bv-navy);
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 1.6rem;
+        font-weight: 900;
+        margin-bottom: .35rem;
+    }
+
+    .bv-author {
+        color: var(--bv-muted);
+        margin-bottom: .8rem;
+    }
+
+    .bv-category-pill {
+        display: inline-flex;
+        background: var(--bv-navy);
+        color: #fff;
+        border-radius: 999px;
+        padding: .35rem 1.2rem;
+        font-size: .85rem;
+        font-weight: 900;
+    }
+
+    .bv-side-info {
+        border-top: 1px solid var(--bv-border);
+        border-bottom: 1px solid var(--bv-border);
+        padding: 1rem 0;
+        text-align: center;
+    }
+
+        .bv-side-info span {
+            display: block;
+            color: var(--bv-muted);
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            font-size: .72rem;
+            font-weight: 900;
+            margin-bottom: .35rem;
+        }
+
+        .bv-side-info strong {
+            color: var(--bv-navy);
+            font-size: 1.05rem;
+        }
+
+    .bv-cart-box {
+        background: #fffaf1;
+        border: 1px solid #e8d7b9;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+        .bv-cart-box label {
+            color: var(--bv-navy);
+            font-weight: 900;
+            font-size: .82rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+    .bv-add-cart-btn {
+        width: 100%;
+        background: var(--bv-red);
+        color: #fff;
+        border: 1px solid var(--bv-red);
+        border-radius: 10px;
+        padding: .75rem 1rem;
+        font-weight: 900;
+    }
+
+        .bv-add-cart-btn:hover {
+            background: #a9342b;
+            border-color: #a9342b;
+            color: #fff;
+        }
+
+    .bv-admin-edit-btn {
+        background: var(--bv-navy);
+        color: #fff;
+        border-radius: 10px;
+        padding: .75rem 1rem;
+        font-weight: 900;
+    }
+
+        .bv-admin-edit-btn:hover {
+            background: #070916;
+            color: #fff;
+        }
+
+    .bv-admin-delete-btn {
+        background: #fff5f5;
+        color: var(--bv-red);
+        border: 1px solid rgba(196,66,53,.28);
+        border-radius: 10px;
+        padding: .75rem 1rem;
+        font-weight: 900;
+    }
+
+        .bv-admin-delete-btn:hover {
+            background: var(--bv-red);
+            color: #fff;
+        }
+
+    .bv-back-btn {
+        background: #fffaf1;
+        color: var(--bv-navy);
+        border: 1px solid #dfcfb8;
+        border-radius: 10px;
+        padding: .75rem 1rem;
+        font-weight: 900;
+    }
+
+        .bv-back-btn:hover {
+            border-color: var(--bv-gold);
+            background: #fff;
+            color: var(--bv-navy);
+        }
+
+    .bv-section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: .75rem;
+        border-bottom: 1px solid rgba(216,155,43,.55);
+        margin-bottom: 1.2rem;
+        color: var(--bv-navy);
+        text-transform: uppercase;
+        letter-spacing: .09em;
+        font-size: .85rem;
+        font-weight: 900;
+    }
+
+        .bv-section-title div {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+        }
+
+        .bv-section-title i {
+            color: var(--bv-gold);
+            font-size: 1.25rem;
+        }
+
+    .bv-info-box {
+        background: #fffaf1;
+        border: 1px solid #e8d7b9;
+        border-radius: 12px;
+        padding: 1rem;
+        min-height: 88px;
+    }
+
+        .bv-info-box span {
+            display: block;
+            color: var(--bv-muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-size: .72rem;
+            font-weight: 900;
+            margin-bottom: .45rem;
+        }
+
+        .bv-info-box strong {
+            color: var(--bv-navy);
+            font-size: 1rem;
+        }
+
+        .bv-info-box p {
+            color: #374151;
+            font-size: 1rem;
+            line-height: 1.75;
+            margin-bottom: 0;
+        }
+
+    .bv-price-card {
+        background: #fffaf1;
+        border: 1px solid #e8d7b9;
+        border-radius: 14px;
+        padding: 1rem;
+        text-align: center;
+        min-height: 125px;
+    }
+
+        .bv-price-card.active {
+            background: var(--bv-navy);
+            border-color: var(--bv-navy);
+        }
+
+        .bv-price-card span {
+            display: block;
+            color: var(--bv-muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-size: .72rem;
+            font-weight: 900;
+            margin-bottom: .55rem;
+        }
+
+        .bv-price-card strong {
+            color: var(--bv-green);
+            font-size: 1.35rem;
+            font-weight: 900;
+        }
+
+        .bv-price-card.active span {
+            color: #d8dbe8;
+        }
+
+        .bv-price-card.active strong {
+            color: #fff;
+        }
+
+        .bv-price-card small {
+            display: inline-flex;
+            background: #e9f8ee;
+            color: var(--bv-green);
+            padding: .2rem .55rem;
+            border-radius: 999px;
+            font-weight: 900;
+            font-size: .72rem;
+            margin-top: .45rem;
+        }
+
+    .bv-image-url {
+        display: block;
+        background: #fffaf1;
+        color: var(--bv-red);
+        border: 1px solid #e8d7b9;
+        border-radius: 10px;
+        padding: .9rem;
+        font-size: .95rem;
+        overflow-wrap: anywhere;
+    }
+
+    @@media (max-width: 991px) {
+        .bv-side-card {
+            position: static;
+        }
+
+        .bv-page-header h1 {
+            font-size: 2rem;
+        }
+
+        .bv-cover-frame {
+            width: 200px;
+            height: 290px;
+        }
+    }
+</style>

@@ -1,0 +1,647 @@
+﻿@model BookVerse.Models.ViewModels.ProductUpsertVM
+
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<div class="bv-page-wrap">
+
+    <!-- Breadcrumb + Title -->
+    <div class="bv-page-header">
+        <div class="bv-breadcrumb">
+            <a asp-controller="Home" asp-action="Index">Dashboard</a>
+            <span>/</span>
+            <a asp-action="Index">Books</a>
+            <span>/</span>
+            <span>Edit Product</span>
+        </div>
+
+        <h1>Edit Product</h1>
+        <p>Update the book details below.</p>
+    </div>
+
+    <form asp-action="Edit"
+          asp-route-id="@Model.Product.Id"
+          method="post"
+          enctype="multipart/form-data">
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+        <input asp-for="Product.Id" type="hidden" />
+
+        <div class="row g-4">
+
+            <!-- LEFT SIDE -->
+            <div class="col-lg-9">
+
+                <!-- Book Information Card -->
+                <div class="bv-card">
+                    <div class="bv-section-title">
+                        <div>
+                            <i class="bi bi-book"></i>
+                            <span>Book Information</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Product.Title" class="bv-label">
+                                Title <span>*</span>
+                            </label>
+                            <input asp-for="Product.Title"
+                                   class="form-control bv-input"
+                                   placeholder="Enter book title" />
+                            <span asp-validation-for="Product.Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.Author" class="bv-label">
+                                Author <span>*</span>
+                            </label>
+                            <input asp-for="Product.Author"
+                                   class="form-control bv-input"
+                                   placeholder="Enter author name" />
+                            <span asp-validation-for="Product.Author" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Product.Description" class="bv-label">
+                                Description
+                            </label>
+                            <textarea asp-for="Product.Description"
+                                      class="form-control bv-input"
+                                      rows="4"
+                                      placeholder="Write short book description"></textarea>
+                            <span asp-validation-for="Product.Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.ISBN" class="bv-label">
+                                ISBN
+                            </label>
+                            <input asp-for="Product.ISBN"
+                                   class="form-control bv-input"
+                                   placeholder="978-XXXXXXXXXX" />
+                            <span asp-validation-for="Product.ISBN" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.ImageUrl" class="bv-label">
+                                Image URL
+                            </label>
+                            <input asp-for="Product.ImageUrl"
+                                   id="imageUrlInput"
+                                   class="form-control bv-input"
+                                   placeholder="/images/products/book1.jpg" />
+                            <small class="bv-help">
+                                Keep this path if you do not want to change the cover.
+                            </small>
+                            <span asp-validation-for="Product.ImageUrl" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.CategoryId" class="bv-label">
+                                Category <span>*</span>
+                            </label>
+                            <select asp-for="Product.CategoryId"
+                                    asp-items="Model.CategoryList"
+                                    class="form-select bv-input">
+                                <option value="">— Select category —</option>
+                            </select>
+                            <span asp-validation-for="Product.CategoryId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.CompanyId" class="bv-label">
+                                Company <span>*</span>
+                            </label>
+                            <select asp-for="Product.CompanyId"
+                                    asp-items="Model.CompanyList"
+                                    class="form-select bv-input">
+                                <option value="">— Select company —</option>
+                            </select>
+                            <span asp-validation-for="Product.CompanyId" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Card -->
+                <div class="bv-card mt-4">
+                    <div class="bv-section-title">
+                        <div>
+                            <i class="bi bi-tags"></i>
+                            <span>Pricing Tiers</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-3 col-6">
+                            <label asp-for="Product.ListPrice" class="bv-label">
+                                List Price
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bv-currency">₹</span>
+                                <input asp-for="Product.ListPrice"
+                                       class="form-control bv-input"
+                                       placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="Product.ListPrice" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <label asp-for="Product.Price" class="bv-label">
+                                Price (1+)
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bv-currency">₹</span>
+                                <input asp-for="Product.Price"
+                                       class="form-control bv-input"
+                                       placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="Product.Price" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <label asp-for="Product.Price50" class="bv-label">
+                                Price (50+)
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bv-currency">₹</span>
+                                <input asp-for="Product.Price50"
+                                       class="form-control bv-input"
+                                       placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="Product.Price50" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <label asp-for="Product.Price100" class="bv-label">
+                                Price (100+)
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bv-currency">₹</span>
+                                <input asp-for="Product.Price100"
+                                       class="form-control bv-input"
+                                       placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="Product.Price100" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="bv-action-card mt-4">
+                    <button type="submit" class="btn bv-save-btn">
+                        <i class="bi bi-save"></i>
+                        Save Changes
+                    </button>
+
+                    <a asp-action="Index" class="btn bv-cancel-btn">
+                        <i class="bi bi-x-lg"></i>
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDE -->
+            <div class="col-lg-3">
+                <div class="bv-card bv-preview-card sticky-lg-top">
+
+                    <div class="bv-section-title">
+                        <div>
+                            <i class="bi bi-image"></i>
+                            <span>Cover Preview</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <div id="coverPreview" class="bv-cover-box">
+                            @if (!string.IsNullOrWhiteSpace(Model.Product.ImageUrl))
+                            {
+                                <img id="coverImg"
+                                     src="@Url.Content(Model.Product.ImageUrl)"
+                                     alt="@Model.Product.Title"
+                                     class="bv-cover-img" />
+                            }
+                            else
+                            {
+                                <div id="coverPlaceholder" class="bv-cover-placeholder">
+                                    <i class="bi bi-book"></i>
+                                    <span>No Cover</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="bv-cover-status mt-3">
+                            <span>Current Cover</span>
+                            <span class="bv-status-pill">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="bv-upload-box mt-4">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <strong>Upload New Cover</strong>
+                        <p>Choose a new image only if you want to replace the current cover.</p>
+
+                        <input asp-for="File"
+                               id="fileInput"
+                               type="file"
+                               accept="image/*"
+                               class="form-control bv-file-input" />
+
+                        <span asp-validation-for="File" class="text-danger small"></span>
+                    </div>
+
+                    <div class="bv-warning-box mt-3">
+                        <i class="bi bi-info-circle"></i>
+                        <span>Uploading a new image will replace the current cover.</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<style>
+    :root {
+        --bv-navy: #111322;
+        --bv-navy-soft: #181b2e;
+        --bv-gold: #d89b2b;
+        --bv-gold-soft: #f4e5c7;
+        --bv-bg: #fbf7ef;
+        --bv-card: #ffffff;
+        --bv-border: #eadfce;
+        --bv-text: #15172a;
+        --bv-muted: #6b7280;
+        --bv-green: #198754;
+        --bv-danger: #dc3545;
+    }
+
+    body {
+        background: radial-gradient(circle at top left, rgba(216,155,43,.10), transparent 30%), linear-gradient(180deg, #fffaf1 0%, #fbf7ef 45%, #f7f1e7 100%);
+    }
+
+    .bv-page-wrap {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1.4rem 1.5rem 2.5rem;
+    }
+
+    .bv-page-header {
+        margin-bottom: 1.1rem;
+    }
+
+    .bv-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        font-size: .88rem;
+        margin-bottom: .35rem;
+        color: var(--bv-muted);
+    }
+
+        .bv-breadcrumb a {
+            color: #c44235;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+            .bv-breadcrumb a:hover {
+                color: var(--bv-gold);
+            }
+
+    .bv-page-header h1 {
+        font-family: Georgia, 'Times New Roman', serif;
+        color: var(--bv-navy);
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        display: inline-block;
+    }
+
+        .bv-page-header h1::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 70px;
+            height: 3px;
+            background: var(--bv-gold);
+            border-radius: 999px;
+        }
+
+    .bv-page-header p {
+        margin-top: .8rem;
+        color: var(--bv-muted);
+        font-size: .98rem;
+    }
+
+    .bv-card {
+        background: rgba(255,255,255,.92);
+        border: 1px solid var(--bv-border);
+        border-radius: 14px;
+        box-shadow: 0 10px 28px rgba(17,19,34,.08);
+        padding: 1.45rem;
+        backdrop-filter: blur(8px);
+    }
+
+    .bv-section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(216,155,43,.55);
+        padding-bottom: .75rem;
+        margin-bottom: 1.2rem;
+        color: var(--bv-navy);
+        text-transform: uppercase;
+        letter-spacing: .09em;
+        font-size: .86rem;
+        font-weight: 800;
+    }
+
+        .bv-section-title div {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+        }
+
+        .bv-section-title i {
+            color: var(--bv-gold);
+            font-size: 1.25rem;
+        }
+
+    .bv-label {
+        color: var(--bv-navy);
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .055em;
+        font-weight: 800;
+        margin-bottom: .4rem;
+    }
+
+        .bv-label span {
+            color: var(--bv-danger);
+        }
+
+    .bv-input {
+        border: 1px solid #ded4c5 !important;
+        border-radius: 8px !important;
+        min-height: 42px;
+        color: var(--bv-text) !important;
+        background-color: #fff !important;
+        box-shadow: inset 0 1px 2px rgba(17,19,34,.03);
+    }
+
+        .bv-input:focus {
+            border-color: var(--bv-gold) !important;
+            box-shadow: 0 0 0 .18rem rgba(216,155,43,.16) !important;
+        }
+
+    textarea.bv-input {
+        min-height: 94px;
+    }
+
+    .bv-help {
+        display: block;
+        margin-top: .35rem;
+        color: var(--bv-muted);
+        font-size: .82rem;
+    }
+
+    .bv-currency {
+        background: #fffaf1;
+        border-color: #ded4c5;
+        color: var(--bv-navy);
+        font-weight: 700;
+    }
+
+    .bv-action-card {
+        background: rgba(255,255,255,.88);
+        border: 1px solid var(--bv-border);
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        gap: 1rem;
+        box-shadow: 0 10px 28px rgba(17,19,34,.07);
+    }
+
+    .bv-save-btn {
+        background: var(--bv-navy);
+        color: #fff;
+        border: 1px solid var(--bv-navy);
+        border-radius: 8px;
+        padding: .7rem 2.4rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        font-size: .86rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+    }
+
+        .bv-save-btn:hover {
+            background: #070916;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    .bv-cancel-btn {
+        background: transparent;
+        color: var(--bv-navy);
+        border: 1px solid #d8ccbb;
+        border-radius: 8px;
+        padding: .7rem 2.4rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        font-size: .86rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+    }
+
+        .bv-cancel-btn:hover {
+            background: #fffaf1;
+            border-color: var(--bv-gold);
+            color: var(--bv-navy);
+        }
+
+    .bv-preview-card {
+        top: 92px;
+    }
+
+    .bv-cover-box {
+        width: 190px;
+        height: 275px;
+        margin: 0 auto;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f8f1e5;
+        border: 1px solid #decfb9;
+        box-shadow: 0 14px 32px rgba(17,19,34,.16);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bv-cover-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .bv-cover-placeholder {
+        color: #b59d77;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .4rem;
+        font-weight: 700;
+    }
+
+        .bv-cover-placeholder i {
+            font-size: 2.4rem;
+        }
+
+    .bv-cover-status {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: .65rem;
+        color: var(--bv-navy);
+        font-size: .9rem;
+    }
+
+    .bv-status-pill {
+        background: var(--bv-green);
+        color: #fff;
+        padding: .18rem .65rem;
+        border-radius: 999px;
+        font-size: .75rem;
+        font-weight: 800;
+    }
+
+    .bv-upload-box {
+        border: 1.5px dashed #d8c4a1;
+        background: #fffaf1;
+        border-radius: 12px;
+        padding: 1.1rem;
+        text-align: center;
+        color: var(--bv-navy);
+    }
+
+        .bv-upload-box > i {
+            font-size: 2.4rem;
+            color: var(--bv-navy);
+            display: block;
+            margin-bottom: .35rem;
+        }
+
+        .bv-upload-box strong {
+            display: block;
+            font-size: .95rem;
+            margin-bottom: .35rem;
+        }
+
+        .bv-upload-box p {
+            color: var(--bv-muted);
+            font-size: .82rem;
+            margin-bottom: .9rem;
+        }
+
+    .bv-file-input {
+        font-size: .85rem;
+        border-radius: 8px;
+        border: 1px solid #ded4c5;
+        background: #fff;
+        color: var(--bv-navy);
+    }
+
+        .bv-file-input::file-selector-button {
+            background: var(--bv-navy);
+            color: #fff;
+            border: 0;
+            padding: .55rem .8rem;
+            margin-right: .8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+    .bv-warning-box {
+        background: #fff8e8;
+        border: 1px solid #f0d9a9;
+        color: var(--bv-navy);
+        border-radius: 10px;
+        padding: .8rem;
+        display: flex;
+        gap: .65rem;
+        font-size: .86rem;
+        line-height: 1.35;
+    }
+
+        .bv-warning-box i {
+            color: var(--bv-gold);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: .1rem;
+        }
+
+    @@media (max-width: 991px) {
+        .bv-preview-card {
+            position: static !important;
+        }
+
+        .bv-action-card {
+            flex-direction: column;
+        }
+
+        .bv-save-btn,
+        .bv-cancel-btn {
+            justify-content: center;
+            width: 100%;
+        }
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function updateCoverPreview() {
+            const input = document.getElementById('imageUrlInput');
+            const preview = document.getElementById('coverPreview');
+            if (!input || !preview) return;
+
+            const url = input.value.trim();
+
+            if (url) {
+                preview.innerHTML = '';
+                const img = document.createElement('img');
+                img.id = 'coverImg';
+                img.src = url;
+                img.alt = 'cover';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.onerror = function () {
+                    preview.innerHTML = '<i class="bi bi-image-slash" style="font-size:2rem; color:#ef4444;"></i>';
+                };
+                preview.appendChild(img);
+            } else {
+                preview.innerHTML = '<i class="bi bi-book" id="coverPlaceholder" style="font-size:2.5rem; color:#334155;"></i>';
+            }
+        }
+
+        // Run once immediately so existing values show on page load
+        document.addEventListener('DOMContentLoaded', updateCoverPreview);
+
+        // Run again live as the user types
+        document.getElementById('imageUrlInput').addEventListener('input', updateCoverPreview);
+    </script>
+}

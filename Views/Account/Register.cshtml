@@ -1,0 +1,177 @@
+﻿@model BookVerse.Models.ViewModels.RegisterVM
+
+@{
+    ViewData["Title"] = "Register — BookVerse";
+}
+
+<style>
+    .auth-wrap {
+        min-height: calc(100vh - 160px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f6f1;
+        padding: 2rem 1rem;
+    }
+    .auth-card {
+        background: #fff;
+        border: 1px solid #e2ddd5;
+        border-radius: 8px;
+        padding: 2.5rem 2.2rem;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 0 4px 24px rgba(26,26,46,.08);
+    }
+    .auth-logo {
+        font-family: 'Georgia', serif;
+        font-size: 1.6rem;
+        color: #d4a853;
+        text-align: center;
+        margin-bottom: .3rem;
+        text-decoration: none;
+        display: block;
+    }
+    .auth-title {
+        font-family: 'Georgia', serif;
+        font-size: 1.4rem;
+        color: #1a1a2e;
+        text-align: center;
+        margin-bottom: .3rem;
+    }
+    .auth-sub {
+        text-align: center;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: .84rem;
+        color: #8a8680;
+        margin-bottom: 1.8rem;
+    }
+    .form-label {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: .82rem;
+        font-weight: 600;
+        color: #1a1a2e;
+        letter-spacing: .03em;
+    }
+    .form-control {
+        border-radius: 4px;
+        border: 1px solid #d8d4cc;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: .9rem;
+        padding: .55rem .85rem;
+    }
+    .form-control:focus {
+        border-color: #d4a853;
+        box-shadow: 0 0 0 3px rgba(212,168,83,.15);
+    }
+    .btn-auth {
+        background: #1a1a2e;
+        color: #fff;
+        border: none;
+        width: 100%;
+        padding: .7rem;
+        border-radius: 4px;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: .9rem;
+        font-weight: 600;
+        letter-spacing: .04em;
+        transition: background .2s;
+        margin-top: .5rem;
+    }
+    .btn-auth:hover { background: #c0392b; color: #fff; }
+    .section-heading {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: .7rem;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: #a8a4a0;
+        border-bottom: 1px solid #e2ddd5;
+        padding-bottom: .4rem;
+        margin: 1.4rem 0 1rem;
+    }
+    .auth-divider {
+        border: none;
+        border-top: 1px solid #e2ddd5;
+        margin: 1.5rem 0;
+    }
+    .auth-link {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: .84rem;
+        color: #6b6b7b;
+        text-align: center;
+    }
+    .auth-link a { color: #c0392b; text-decoration: none; font-weight: 600; }
+    .auth-link a:hover { text-decoration: underline; }
+</style>
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <a class="auth-logo" asp-controller="Home" asp-action="Index">📚 BookVerse</a>
+        <h1 class="auth-title">Create an account</h1>
+        <p class="auth-sub">Start your reading journey today</p>
+
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 mb-3" style="font-size:.84rem;"></div>
+
+            <p class="section-heading">Account details</p>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Full name</label>
+                <input asp-for="Name" class="form-control" placeholder="Jane Doe" />
+                <span asp-validation-for="Name" class="text-danger" style="font-size:.78rem;"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email address</label>
+                <input asp-for="Email" class="form-control" placeholder="you@example.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger" style="font-size:.78rem;"></span>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <input asp-for="Password" class="form-control" placeholder="••••••••" autocomplete="new-password" />
+                    <span asp-validation-for="Password" class="text-danger" style="font-size:.78rem;"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="ConfirmPassword" class="form-label">Confirm</label>
+                    <input asp-for="ConfirmPassword" class="form-control" placeholder="••••••••" autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger" style="font-size:.78rem;"></span>
+                </div>
+            </div>
+
+            <p class="section-heading">Shipping address <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></p>
+
+            <div class="mb-3">
+                <label asp-for="StreetAddress" class="form-label">Street address</label>
+                <input asp-for="StreetAddress" class="form-control" placeholder="123 Main St" />
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-5">
+                    <label asp-for="City" class="form-label">City</label>
+                    <input asp-for="City" class="form-control" placeholder="Patna" />
+                </div>
+                <div class="col-3">
+                    <label asp-for="State" class="form-label">State</label>
+                    <input asp-for="State" class="form-control" placeholder="BR" />
+                </div>
+                <div class="col-4">
+                    <label asp-for="PostalCode" class="form-label">Postal</label>
+                    <input asp-for="PostalCode" class="form-control" placeholder="800001" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn-auth">Create Account</button>
+        </form>
+
+        <hr class="auth-divider" />
+        <p class="auth-link">
+            Already have an account?
+            <a asp-controller="Account" asp-action="Login">Sign in</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

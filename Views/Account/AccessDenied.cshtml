@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<style>
+    .denied-wrap {
+        min-height: calc(100vh - 160px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f6f1;
+        text-align: center;
+        padding: 2rem;
+    }
+    .denied-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .denied-title {
+        font-family: 'Georgia', serif;
+        font-size: 1.8rem;
+        color: #1a1a2e;
+        margin-bottom: .5rem;
+    }
+    .denied-sub {
+        font-family: 'Segoe UI', sans-serif;
+        color: #8a8680;
+        font-size: .95rem;
+        margin-bottom: 2rem;
+    }
+    .btn-home {
+        background: #1a1a2e;
+        color: #fff;
+        padding: .65rem 2rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: .88rem;
+        transition: background .2s;
+    }
+    .btn-home:hover { background: #c0392b; color: #fff; }
+</style>
+
+<div class="denied-wrap">
+    <div>
+        <div class="denied-icon">🔒</div>
+        <h1 class="denied-title">Access Denied</h1>
+        <p class="denied-sub">You don't have permission to view this page.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn-home">Back to Home</a>
+    </div>
+</div>

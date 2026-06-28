@@ -1,0 +1,323 @@
+@model BookVerse.Models.ViewModels.OrderVM
+@using BookVerse.Utilities
+
+@{
+    ViewData["Title"] = $"Order #{Model.OrderHeader.Id}";
+    bool canManageOrder = User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee);
+    string StatusBadge(string? status) =>
+        status == SD.StatusShipped || status == SD.PaymentStatusApproved ? "bg-success" :
+        status == SD.StatusCancelled || status == SD.StatusRefunded || status == SD.PaymentStatusRejected ? "bg-danger" :
+        status == SD.StatusInProcess ? "bg-warning text-dark" :
+        status == SD.PaymentStatusApprovedForDelayedPayment ? "bg-info text-dark" :
+        "bg-secondary";
+}
+
+<div class="bv-order-page">
+    <div class="container py-4 py-lg-5">
+        <div class="bv-order-header mb-4">
+            <div>
+                <div class="bv-breadcrumb mb-2">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <span>/</span>
+                    <a asp-controller="Order" asp-action="Index">Orders</a>
+                    <span>/</span>
+                    <span>#@Model.OrderHeader.Id</span>
+                </div>
+                <p class="bv-eyebrow mb-1">Order Details</p>
+                <h1>Order #@Model.OrderHeader.Id</h1>
+                <p class="mb-0">Placed on @Model.OrderHeader.OrderDate.ToString("dd MMM yyyy") by @Model.OrderHeader.ApplicationUser?.Name</p>
+            </div>
+
+            <a asp-action="Index" class="btn bv-outline-btn">
+                <i class="bi bi-arrow-left"></i>
+                Back to Orders
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="bv-dark-card">
+                    <div class="bv-card-title">
+                        <i class="bi bi-receipt"></i>
+                        Items
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0 bv-order-table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th class="text-center">Count</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Line Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detail in Model.OrderDetail)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@detail.Product?.Title</strong>
+                                        </td>
+                                        <td class="text-center">@detail.Count</td>
+                                        <td class="text-end">₹@detail.Price.ToString("0.00")</td>
+                                        <td class="text-end">₹@((detail.Price * detail.Count).ToString("0.00"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="text-end">Order Total</th>
+                                    <th class="text-end">₹@Model.OrderHeader.OrderTotal.ToString("0.00")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="bv-dark-card mb-4">
+                    <div class="bv-card-title">
+                        <i class="bi bi-truck"></i>
+                        Status
+                    </div>
+
+                    <div class="bv-status-row">
+                        <span>Order Status</span>
+                        <span class="badge @StatusBadge(Model.OrderHeader.OrderStatus)">@Model.OrderHeader.OrderStatus</span>
+                    </div>
+                    <div class="bv-status-row">
+                        <span>Payment Status</span>
+                        <span class="badge @StatusBadge(Model.OrderHeader.PaymentStatus)">@Model.OrderHeader.PaymentStatus</span>
+                    </div>
+
+                    @if (canManageOrder)
+                    {
+                        <form asp-action="UpdateStatus" method="post" class="mt-4">
+                            <input type="hidden" name="orderId" value="@Model.OrderHeader.Id" />
+                            <label class="form-label text-white-50" for="orderStatus">Update Order Status</label>
+                            <select class="form-select bv-select" id="orderStatus" name="orderStatus">
+                                <option value="@SD.StatusPending" selected="@(Model.OrderHeader.OrderStatus == SD.StatusPending)">@SD.StatusPending</option>
+                                <option value="@SD.StatusApproved" selected="@(Model.OrderHeader.OrderStatus == SD.StatusApproved)">@SD.StatusApproved</option>
+                                <option value="@SD.StatusInProcess" selected="@(Model.OrderHeader.OrderStatus == SD.StatusInProcess)">@SD.StatusInProcess</option>
+                                <option value="@SD.StatusShipped" selected="@(Model.OrderHeader.OrderStatus == SD.StatusShipped)">@SD.StatusShipped</option>
+                                <option value="@SD.StatusCancelled" selected="@(Model.OrderHeader.OrderStatus == SD.StatusCancelled)">@SD.StatusCancelled</option>
+                                <option value="@SD.StatusRefunded" selected="@(Model.OrderHeader.OrderStatus == SD.StatusRefunded)">@SD.StatusRefunded</option>
+                            </select>
+                            <button type="submit" class="btn bv-gold-btn w-100 mt-3">
+                                <i class="bi bi-check2-circle"></i>
+                                Update Status
+                            </button>
+                        </form>
+
+                        <div class="row g-2 mt-2">
+                            <div class="col-6">
+                                <form asp-action="ShipOrder" method="post">
+                                    <input type="hidden" name="orderId" value="@Model.OrderHeader.Id" />
+                                    <button type="submit" class="btn bv-ship-btn w-100">
+                                        <i class="bi bi-truck"></i>
+                                        Ship
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-6">
+                                <form asp-action="CancelOrder" method="post">
+                                    <input type="hidden" name="orderId" value="@Model.OrderHeader.Id" />
+                                    <button type="submit" class="btn bv-cancel-btn w-100">
+                                        <i class="bi bi-x-circle"></i>
+                                        Cancel
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="bv-dark-card">
+                    <div class="bv-card-title">
+                        <i class="bi bi-geo-alt"></i>
+                        Shipping Address
+                    </div>
+
+                    <div class="bv-address">
+                        <strong>@Model.OrderHeader.Name</strong>
+                        <span>@Model.OrderHeader.StreetAddress</span>
+                        <span>@Model.OrderHeader.City, @Model.OrderHeader.State @Model.OrderHeader.PostalCode</span>
+                        <span>@Model.OrderHeader.PhoneNumber</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bv-order-page {
+        min-height: 100vh;
+        background: radial-gradient(circle at top left, rgba(216,155,43,.13), transparent 30%), linear-gradient(180deg, #111322 0%, #1b1e32 42%, #fbf7ef 42%, #fbf7ef 100%);
+    }
+
+    .bv-order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 1.5rem;
+        color: #fff;
+    }
+
+    .bv-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        color: rgba(255,255,255,.62);
+        font-size: .9rem;
+    }
+
+    .bv-breadcrumb a {
+        color: #d89b2b;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .bv-eyebrow {
+        text-transform: uppercase;
+        color: #d89b2b;
+        letter-spacing: .16em;
+        font-size: .78rem;
+        font-weight: 900;
+    }
+
+    .bv-order-header h1 {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin: 0;
+    }
+
+    .bv-order-header p {
+        color: rgba(255,255,255,.72);
+        margin-top: .8rem;
+    }
+
+    .bv-dark-card {
+        background: #15182a;
+        border: 1px solid rgba(216,155,43,.24);
+        border-radius: 18px;
+        padding: 1.25rem;
+        color: #fff;
+        box-shadow: 0 18px 44px rgba(17,19,34,.20);
+    }
+
+    .bv-card-title {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        color: #d89b2b;
+        font-weight: 900;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        font-size: .82rem;
+        padding-bottom: .9rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+
+    .bv-order-table {
+        --bs-table-bg: transparent;
+        --bs-table-border-color: rgba(255,255,255,.10);
+    }
+
+    .bv-status-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: .85rem 0;
+        border-bottom: 1px solid rgba(255,255,255,.10);
+        color: rgba(255,255,255,.78);
+    }
+
+    .bv-select {
+        background-color: #0f1120;
+        border-color: rgba(255,255,255,.18);
+        color: #fff;
+    }
+
+    .bv-gold-btn {
+        background: #d89b2b;
+        color: #111322;
+        border: 1px solid #d89b2b;
+        border-radius: 10px;
+        font-weight: 900;
+    }
+
+    .bv-gold-btn:hover {
+        background: #edb348;
+        border-color: #edb348;
+        color: #111322;
+    }
+
+    .bv-ship-btn {
+        background: #198754;
+        color: #fff;
+        border: 1px solid #198754;
+        border-radius: 10px;
+        font-weight: 900;
+    }
+
+    .bv-ship-btn:hover {
+        background: #157347;
+        border-color: #157347;
+        color: #fff;
+    }
+
+    .bv-cancel-btn {
+        background: #c44235;
+        color: #fff;
+        border: 1px solid #c44235;
+        border-radius: 10px;
+        font-weight: 900;
+    }
+
+    .bv-cancel-btn:hover {
+        background: #a9342b;
+        border-color: #a9342b;
+        color: #fff;
+    }
+
+    .bv-outline-btn {
+        border: 1px solid rgba(255,255,255,.34);
+        color: #fff;
+        border-radius: 10px;
+        font-weight: 800;
+    }
+
+    .bv-outline-btn:hover {
+        border-color: #d89b2b;
+        color: #d89b2b;
+    }
+
+    .bv-address {
+        display: flex;
+        flex-direction: column;
+        gap: .35rem;
+        color: rgba(255,255,255,.74);
+    }
+
+    .bv-address strong {
+        color: #fff;
+        font-size: 1.05rem;
+    }
+
+    @@media (max-width: 768px) {
+        .bv-order-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .bv-order-header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>

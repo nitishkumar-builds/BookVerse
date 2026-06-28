@@ -1,0 +1,548 @@
+﻿@model IEnumerable<BookVerse.Models.ViewModels.ProductVM>
+@using BookVerse.Utilities
+
+@{
+    ViewData["Title"] = "Books";
+
+    bool isAdminOrEmployee = User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee);
+}
+
+<div class="bv-products-page">
+
+    <div class="container py-4 py-lg-5">
+
+        <div class="bv-page-header mb-4">
+            <div>
+                <div class="bv-breadcrumb mb-2">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <span>/</span>
+                    <span>Books</span>
+                </div>
+
+                <p class="bv-eyebrow mb-1">BookVerse Catalog</p>
+                <h1>Explore Books</h1>
+                <p>
+                    Browse your book collection with cover images, categories, companies, and tiered pricing.
+                </p>
+            </div>
+
+            @if (isAdminOrEmployee)
+            {
+                <a asp-action="Create" class="btn bv-add-btn">
+                    <i class="bi bi-plus-lg"></i>
+                    Add New Book
+                </a>
+            }
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="bv-product-grid">
+
+                @foreach (var item in Model)
+                {
+                    string coverPath = !string.IsNullOrWhiteSpace(item.ImageUrl)
+                        ? Url.Content(item.ImageUrl)
+                        : "";
+
+                    <div class="bv-product-card">
+
+                        <div class="bv-cover-wrap">
+                            @if (!string.IsNullOrWhiteSpace(coverPath))
+                            {
+                                <img src="@coverPath" alt="@item.Title" class="bv-cover-img" />
+                            }
+                            else
+                            {
+                                <div class="bv-cover-placeholder">
+                                    <i class="bi bi-book"></i>
+                                    <span>No Cover</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="bv-product-content">
+
+                            <div class="bv-product-top">
+                                <div>
+                                    <h2>@item.Title</h2>
+                                    <p>@item.Author</p>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(item.CategoryName))
+                                {
+                                    <span class="bv-category-pill">@item.CategoryName</span>
+                                }
+                            </div>
+
+                            <div class="bv-meta-grid">
+                                <div class="bv-meta-box">
+                                    <span>ISBN</span>
+                                    <strong>@item.ISBN</strong>
+                                </div>
+
+                                <div class="bv-meta-box">
+                                    <span>Company</span>
+                                    <strong>@item.CompanyName</strong>
+                                </div>
+                            </div>
+
+                            <div class="bv-price-grid">
+                                <div class="bv-price-box">
+                                    <span>List</span>
+                                    <strong class="bv-muted-price text-decoration-line-through">
+                                        ₹@item.ListPrice.ToString("0.00")
+                                    </strong>
+                                </div>
+
+                                <div class="bv-price-box">
+                                    <span>Price</span>
+                                    <strong class="bv-green-price">
+                                        ₹@item.Price.ToString("0.00")
+                                    </strong>
+                                </div>
+
+                                <div class="bv-price-box">
+                                    <span>50+</span>
+                                    <strong class="bv-green-price">
+                                        ₹@item.Price50.ToString("0.00")
+                                    </strong>
+                                </div>
+
+                                <div class="bv-price-box">
+                                    <span>100+</span>
+                                    <strong class="bv-green-price">
+                                        ₹@item.Price100.ToString("0.00")
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="bv-action-row">
+                                <a asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       class="btn bv-view-btn">
+                                    <i class="bi bi-eye"></i>
+                                    View Details
+                                </a>
+
+                                @if (isAdminOrEmployee)
+                                {
+                                    <a asp-action="Edit"
+                                           asp-route-id="@item.Id"
+                                           class="btn bv-edit-btn">
+                                        <i class="bi bi-pencil-square"></i>
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="btn bv-delete-btn">
+                                        <i class="bi bi-trash"></i>
+                                        Delete
+                                    </a>
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="bv-empty-card text-center">
+                <i class="bi bi-book"></i>
+                <h3>No books found</h3>
+                <p>There are no products available right now.</p>
+
+                @if (isAdminOrEmployee)
+                {
+                    <a asp-action="Create" class="btn bv-add-btn">
+                        <i class="bi bi-plus-lg"></i>
+                        Add First Book
+                    </a>
+                }
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<style>
+    :root {
+        --bv-navy: #111322;
+        --bv-gold: #d89b2b;
+        --bv-red: #c44235;
+        --bv-cream: #fbf7ef;
+        --bv-card: #ffffff;
+        --bv-border: #eadfce;
+        --bv-muted: #6b7280;
+        --bv-green: #198754;
+        --bv-text: #15172a;
+    }
+
+    .bv-products-page {
+        min-height: 100vh;
+        background: radial-gradient(circle at top left, rgba(216,155,43,.10), transparent 28%), linear-gradient(180deg, #fffaf1 0%, #fbf7ef 45%, #f7f1e7 100%);
+    }
+
+    .bv-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 1.5rem;
+    }
+
+    .bv-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        color: var(--bv-muted);
+        font-size: .9rem;
+    }
+
+        .bv-breadcrumb a {
+            color: var(--bv-red);
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+            .bv-breadcrumb a:hover {
+                color: var(--bv-gold);
+            }
+
+    .bv-eyebrow {
+        text-transform: uppercase;
+        color: var(--bv-gold);
+        letter-spacing: .16em;
+        font-size: .78rem;
+        font-weight: 900;
+    }
+
+    .bv-page-header h1 {
+        font-family: Georgia, 'Times New Roman', serif;
+        color: var(--bv-navy);
+        font-size: 2.65rem;
+        font-weight: 900;
+        margin: 0;
+        position: relative;
+        display: inline-block;
+    }
+
+        .bv-page-header h1::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -9px;
+            width: 82px;
+            height: 3px;
+            background: var(--bv-gold);
+            border-radius: 999px;
+        }
+
+    .bv-page-header p {
+        margin-top: 1rem;
+        color: var(--bv-muted);
+        font-size: 1rem;
+    }
+
+    .bv-add-btn {
+        background: var(--bv-navy);
+        color: #fff;
+        border: 1px solid var(--bv-navy);
+        border-radius: 10px;
+        padding: .8rem 1.5rem;
+        font-weight: 900;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        font-size: .86rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        white-space: nowrap;
+    }
+
+        .bv-add-btn:hover {
+            background: #070916;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    .bv-product-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.45rem;
+        margin-top: 2.2rem;
+    }
+
+    .bv-product-card {
+        background: rgba(255,255,255,.94);
+        border: 1px solid var(--bv-border);
+        border-radius: 18px;
+        padding: 1.05rem;
+        display: grid;
+        grid-template-columns: 135px minmax(0, 1fr);
+        gap: 1.2rem;
+        box-shadow: 0 14px 34px rgba(17,19,34,.08);
+        transition: all .22s ease;
+    }
+
+        .bv-product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 44px rgba(17,19,34,.13);
+            border-color: rgba(216,155,43,.55);
+        }
+
+    .bv-cover-wrap {
+        width: 135px;
+        height: 195px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f4ead8;
+        border: 1px solid #dfcfb8;
+        box-shadow: 0 14px 28px rgba(17,19,34,.16);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bv-cover-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .bv-cover-placeholder {
+        color: #aa8d61;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .4rem;
+        font-weight: 800;
+    }
+
+        .bv-cover-placeholder i {
+            font-size: 2.4rem;
+        }
+
+        .bv-cover-placeholder span {
+            font-size: .8rem;
+        }
+
+    .bv-product-content {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .bv-product-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: .8rem;
+        margin-bottom: .9rem;
+    }
+
+        .bv-product-top h2 {
+            color: var(--bv-navy);
+            font-size: 1.28rem;
+            font-weight: 900;
+            margin: 0 0 .25rem;
+            line-height: 1.25;
+        }
+
+        .bv-product-top p {
+            color: var(--bv-muted);
+            margin: 0;
+            font-size: .95rem;
+        }
+
+    .bv-category-pill {
+        background: var(--bv-navy);
+        color: #fff;
+        border-radius: 999px;
+        padding: .32rem .85rem;
+        font-size: .76rem;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .bv-meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .75rem;
+        margin-bottom: .75rem;
+    }
+
+    .bv-meta-box {
+        background: #fffaf1;
+        border: 1px solid #e8d7b9;
+        border-radius: 11px;
+        padding: .75rem;
+        min-height: 74px;
+    }
+
+        .bv-meta-box span,
+        .bv-price-box span {
+            display: block;
+            color: var(--bv-muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-size: .68rem;
+            font-weight: 900;
+            margin-bottom: .3rem;
+        }
+
+        .bv-meta-box strong {
+            color: var(--bv-navy);
+            font-size: .9rem;
+            overflow-wrap: anywhere;
+        }
+
+    .bv-price-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: .6rem;
+        margin-bottom: 1rem;
+    }
+
+    .bv-price-box {
+        background: #fff;
+        border: 1px solid var(--bv-border);
+        border-radius: 11px;
+        padding: .65rem .4rem;
+        text-align: center;
+        min-height: 66px;
+    }
+
+        .bv-price-box strong {
+            font-size: .9rem;
+            font-weight: 900;
+        }
+
+    .bv-muted-price {
+        color: var(--bv-muted);
+    }
+
+    .bv-green-price {
+        color: var(--bv-green);
+    }
+
+    .bv-action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .55rem;
+        margin-top: auto;
+    }
+
+    .bv-view-btn,
+    .bv-edit-btn,
+    .bv-delete-btn {
+        border-radius: 9px;
+        padding: .6rem .9rem;
+        font-size: .82rem;
+        font-weight: 900;
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+    }
+
+    .bv-view-btn {
+        background: var(--bv-navy);
+        color: #fff;
+        border: 1px solid var(--bv-navy);
+    }
+
+        .bv-view-btn:hover {
+            background: #070916;
+            color: #fff;
+        }
+
+    .bv-edit-btn {
+        background: #fffaf1;
+        color: var(--bv-navy);
+        border: 1px solid #dfcfb8;
+    }
+
+        .bv-edit-btn:hover {
+            border-color: var(--bv-gold);
+            background: #fff;
+            color: var(--bv-navy);
+        }
+
+    .bv-delete-btn {
+        background: #fff5f5;
+        color: var(--bv-red);
+        border: 1px solid rgba(196,66,53,.28);
+    }
+
+        .bv-delete-btn:hover {
+            background: var(--bv-red);
+            color: #fff;
+        }
+
+    .bv-empty-card {
+        background: rgba(255,255,255,.94);
+        border: 1px solid var(--bv-border);
+        border-radius: 18px;
+        padding: 3rem 1.5rem;
+        box-shadow: 0 14px 34px rgba(17,19,34,.08);
+        margin-top: 2rem;
+    }
+
+        .bv-empty-card > i {
+            color: var(--bv-gold);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .bv-empty-card h3 {
+            color: var(--bv-navy);
+            font-weight: 900;
+        }
+
+        .bv-empty-card p {
+            color: var(--bv-muted);
+        }
+
+    @@media (max-width: 1199px) {
+        .bv-product-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .bv-page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .bv-page-header h1 {
+                font-size: 2.1rem;
+            }
+
+        .bv-product-card {
+            grid-template-columns: 1fr;
+        }
+
+        .bv-cover-wrap {
+            margin: 0 auto;
+            width: 165px;
+            height: 240px;
+        }
+
+        .bv-meta-grid,
+        .bv-price-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .bv-action-row .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>

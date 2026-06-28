@@ -1,0 +1,64 @@
+@model IEnumerable<BookVerse.Models.OrderHeader>
+@using BookVerse.Utilities
+
+@{
+    ViewData["Title"] = "All Orders";
+}
+
+<h1>All Orders</h1>
+
+@if (!Model.Any())
+{
+    <p class="text-muted mt-3">No orders found.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Order Date</th>
+                <th>Order Total</th>
+                <th>Order Status</th>
+                <th>Payment Status</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.ApplicationUser?.Name</td>
+                    <td>@order.OrderDate.ToString("dd MMM yyyy")</td>
+                    <td>₹@order.OrderTotal.ToString("0.00")</td>
+                    <td>
+                        <span class="badge
+                            @(order.OrderStatus == SD.StatusShipped ? "bg-success" :
+                              order.OrderStatus == SD.StatusCancelled ? "bg-danger" :
+                              order.OrderStatus == SD.StatusInProcess ? "bg-warning text-dark" :
+                              "bg-secondary")">
+                            @order.OrderStatus
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge
+                            @(order.PaymentStatus == SD.PaymentStatusApproved ? "bg-success" :
+                              order.PaymentStatus == SD.PaymentStatusRejected ? "bg-danger" :
+                              order.PaymentStatus == SD.PaymentStatusApprovedForDelayedPayment ? "bg-info text-dark" :
+                              "bg-secondary")">
+                            @order.PaymentStatus
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-orderId="@order.Id" class="btn btn-sm btn-dark">
+                            <i class="bi bi-eye"></i>
+                            Details
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
