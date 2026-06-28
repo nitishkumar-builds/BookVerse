@@ -1,0 +1,4 @@
+*.cshtml linguist-language=C#
+wwwroot/lib/** linguist-vendored
+wwwroot/css/** linguist-vendored
+wwwroot/js/** linguist-vendored
